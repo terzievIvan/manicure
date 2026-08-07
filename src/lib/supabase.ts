@@ -79,12 +79,32 @@ export const MOCK_APPOINTMENTS: AppointmentItem[] = [
   },
 ];
 
+// Helper for localStorage fallback
+function getLocal<T>(key: string, fallback: T): T {
+  if (typeof window === 'undefined') return fallback;
+  try {
+    const item = localStorage.getItem(key);
+    return item ? JSON.parse(item) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function setLocal<T>(key: string, value: T): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (e) {
+    console.error('Error saving to localStorage:', e);
+  }
+}
+
 // --- КЛИЕНТЫ ---
 export async function getClients(): Promise<ClientItem[]> {
   if (supabase) {
     try {
       const { data, error } = await supabase.from('clients').select('*');
-      if (!error && data && data.length > 0) {
+      if (!error && data) {
         return data.map((c: any) => ({
           id: String(c.id),
           name: c.name,
@@ -96,16 +116,18 @@ export async function getClients(): Promise<ClientItem[]> {
       console.error('Error fetching clients from Supabase:', e);
     }
   }
-  return MOCK_CLIENTS;
+  return getLocal('manic_clients', MOCK_CLIENTS);
 }
 
 export async function saveClient(client: ClientItem): Promise<void> {
-  const idx = MOCK_CLIENTS.findIndex((c) => c.id === client.id);
+  const current = getLocal('manic_clients', MOCK_CLIENTS);
+  const idx = current.findIndex((c) => c.id === client.id);
   if (idx !== -1) {
-    MOCK_CLIENTS[idx] = client;
+    current[idx] = client;
   } else {
-    MOCK_CLIENTS.push(client);
+    current.push(client);
   }
+  setLocal('manic_clients', current);
 
   if (supabase) {
     try {
@@ -122,8 +144,9 @@ export async function saveClient(client: ClientItem): Promise<void> {
 }
 
 export async function deleteClient(id: string): Promise<void> {
-  const idx = MOCK_CLIENTS.findIndex((c) => c.id === id);
-  if (idx !== -1) MOCK_CLIENTS.splice(idx, 1);
+  const current = getLocal('manic_clients', MOCK_CLIENTS);
+  const updated = current.filter((c) => c.id !== id);
+  setLocal('manic_clients', updated);
 
   if (supabase) {
     try {
@@ -139,7 +162,7 @@ export async function getServices(): Promise<ServiceItem[]> {
   if (supabase) {
     try {
       const { data, error } = await supabase.from('services').select('*');
-      if (!error && data && data.length > 0) {
+      if (!error && data) {
         return data.map((s: any) => ({
           id: String(s.id),
           name: s.name,
@@ -152,16 +175,18 @@ export async function getServices(): Promise<ServiceItem[]> {
       console.error('Error fetching services from Supabase:', e);
     }
   }
-  return MOCK_SERVICES;
+  return getLocal('manic_services', MOCK_SERVICES);
 }
 
 export async function saveService(service: ServiceItem): Promise<void> {
-  const idx = MOCK_SERVICES.findIndex((s) => s.id === service.id);
+  const current = getLocal('manic_services', MOCK_SERVICES);
+  const idx = current.findIndex((s) => s.id === service.id);
   if (idx !== -1) {
-    MOCK_SERVICES[idx] = service;
+    current[idx] = service;
   } else {
-    MOCK_SERVICES.push(service);
+    current.push(service);
   }
+  setLocal('manic_services', current);
 
   if (supabase) {
     try {
@@ -179,8 +204,9 @@ export async function saveService(service: ServiceItem): Promise<void> {
 }
 
 export async function deleteService(id: string): Promise<void> {
-  const idx = MOCK_SERVICES.findIndex((s) => s.id === id);
-  if (idx !== -1) MOCK_SERVICES.splice(idx, 1);
+  const current = getLocal('manic_services', MOCK_SERVICES);
+  const updated = current.filter((s) => s.id !== id);
+  setLocal('manic_services', updated);
 
   if (supabase) {
     try {
@@ -196,7 +222,7 @@ export async function getAppointments(): Promise<AppointmentItem[]> {
   if (supabase) {
     try {
       const { data, error } = await supabase.from('appointments').select('*');
-      if (!error && data && data.length > 0) {
+      if (!error && data) {
         return data.map((a: any) => ({
           id: String(a.id),
           clientId: String(a.client_id || ''),
@@ -215,16 +241,18 @@ export async function getAppointments(): Promise<AppointmentItem[]> {
       console.error('Error fetching appointments from Supabase:', e);
     }
   }
-  return MOCK_APPOINTMENTS;
+  return getLocal('manic_appointments', MOCK_APPOINTMENTS);
 }
 
 export async function saveAppointment(appointment: AppointmentItem): Promise<void> {
-  const idx = MOCK_APPOINTMENTS.findIndex((a) => a.id === appointment.id);
+  const current = getLocal('manic_appointments', MOCK_APPOINTMENTS);
+  const idx = current.findIndex((a) => a.id === appointment.id);
   if (idx !== -1) {
-    MOCK_APPOINTMENTS[idx] = appointment;
+    current[idx] = appointment;
   } else {
-    MOCK_APPOINTMENTS.push(appointment);
+    current.push(appointment);
   }
+  setLocal('manic_appointments', current);
 
   if (supabase) {
     try {
@@ -248,9 +276,11 @@ export async function saveAppointment(appointment: AppointmentItem): Promise<voi
 }
 
 export async function updateAppointmentStatus(id: string, status: string): Promise<void> {
-  const idx = MOCK_APPOINTMENTS.findIndex((a) => a.id === id);
+  const current = getLocal('manic_appointments', MOCK_APPOINTMENTS);
+  const idx = current.findIndex((a) => a.id === id);
   if (idx !== -1) {
-    MOCK_APPOINTMENTS[idx].status = status;
+    current[idx].status = status;
+    setLocal('manic_appointments', current);
   }
 
   if (supabase) {
@@ -263,8 +293,9 @@ export async function updateAppointmentStatus(id: string, status: string): Promi
 }
 
 export async function deleteAppointment(id: string): Promise<void> {
-  const idx = MOCK_APPOINTMENTS.findIndex((a) => a.id === id);
-  if (idx !== -1) MOCK_APPOINTMENTS.splice(idx, 1);
+  const current = getLocal('manic_appointments', MOCK_APPOINTMENTS);
+  const updated = current.filter((a) => a.id !== id);
+  setLocal('manic_appointments', updated);
 
   if (supabase) {
     try {
