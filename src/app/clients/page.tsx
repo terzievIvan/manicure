@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, Plus, Phone } from "lucide-react";
+import { Search, Plus, Phone, Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { getClients, saveClient, ClientItem } from "@/lib/supabase";
+import { getClients, saveClient, deleteClient, ClientItem } from "@/lib/supabase";
 import Link from "next/link";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Label } from "@/components/ui/label";
@@ -51,6 +51,14 @@ export default function ClientsPage() {
     setIsSheetOpen(false);
   };
 
+  const handleDeleteClient = async (id: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    await deleteClient(id);
+    const updated = await getClients();
+    setClients(updated);
+  };
+
   return (
     <div className="flex flex-col h-full bg-background pt-safe">
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur px-4 pt-4 pb-4 border-b">
@@ -66,13 +74,21 @@ export default function ClientsPage() {
         </div>
       </div>
 
-      <div className="p-4 space-y-3">
+      <div className="p-4 space-y-3 pb-24">
         {filteredClients.length > 0 ? (
           filteredClients.map(client => (
             <Link href={`/clients/${client.id}`} key={client.id} className="block">
-              <div className="bg-card text-card-foreground p-4 rounded-2xl shadow-sm ring-1 ring-border/50 flex flex-col gap-2 hover:bg-muted/50 transition-colors">
+              <div className="bg-card text-card-foreground p-4 rounded-2xl shadow-sm ring-1 ring-border/50 flex flex-col gap-2 hover:bg-muted/50 transition-colors relative group">
                 <div className="flex justify-between items-center">
                   <span className="font-semibold text-lg">{client.name}</span>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
+                    onClick={(e) => handleDeleteClient(client.id, e)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
                 </div>
                 <div className="flex justify-between items-center text-muted-foreground">
                   <div className="flex items-center text-sm text-primary">

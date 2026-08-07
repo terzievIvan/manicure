@@ -6,32 +6,32 @@ import { ArrowLeft, Save, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { MOCK_CLIENTS } from "@/lib/supabase";
+import { getClients, saveClient, deleteClient, ClientItem } from "@/lib/supabase";
 
 export default function EditClientPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
   const { id } = use(params);
   
-  const [client, setClient] = useState({ name: "", phone: "", notes: "" });
+  const [client, setClient] = useState<ClientItem>({ id: "", name: "", phone: "", lastVisit: "" });
+  const [notes, setNotes] = useState("");
 
   useEffect(() => {
-    // В реальном приложении здесь будет запрос к Supabase
-    // const { data } = await supabase.from('clients').select('*').eq('id', id).single();
-    const found = MOCK_CLIENTS.find(c => c.id === id);
-    if (found) {
-      setClient({ name: found.name, phone: found.phone, notes: "Пример заметки..." });
-    }
+    getClients().then((clients) => {
+      const found = clients.find(c => c.id === id);
+      if (found) {
+        setClient(found);
+      }
+    });
   }, [id]);
 
-  const handleSave = () => {
-    // Заглушка
-    // await supabase.from('clients').update({ name, phone, notes }).eq('id', id);
+  const handleSave = async () => {
+    if (!client.name.trim()) return;
+    await saveClient(client);
     router.back();
   };
 
-  const handleDelete = () => {
-    // Заглушка
-    // await supabase.from('clients').delete().eq('id', id);
+  const handleDelete = async () => {
+    await deleteClient(id);
     router.back();
   };
 
@@ -76,7 +76,7 @@ export default function EditClientPage({ params }: { params: Promise<{ id: strin
           <Input 
             id="notes" 
             className="h-12 rounded-xl text-base" 
-            value={client.notes}
+            value={client.notes || ""}
             onChange={(e) => setClient({ ...client, notes: e.target.value })}
           />
         </div>

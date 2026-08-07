@@ -12,6 +12,7 @@ export interface ClientItem {
   name: string;
   phone: string;
   lastVisit?: string;
+  notes?: string;
 }
 
 export interface ServiceItem {
