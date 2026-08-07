@@ -1,18 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus, Sparkles, Trash2, Edit2, Tag, Clock } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { MOCK_SERVICES } from "@/lib/supabase";
+import { getServices, saveService, deleteService, ServiceItem } from "@/lib/supabase";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Label } from "@/components/ui/label";
 import { ServiceIcon, SERVICE_ICONS } from "@/components/ServiceIcon";
 
 export default function ServicesPage() {
-  const [services, setServices] = useState(MOCK_SERVICES);
+  const [services, setServices] = useState<ServiceItem[]>([]);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [editingServiceId, setEditingServiceId] = useState<string | null>(null);
+
+  useEffect(() => {
+    getServices().then(setServices);
+  }, []);
 
   // Form state
   const [name, setName] = useState("");
@@ -29,7 +33,7 @@ export default function ServicesPage() {
     setIsSheetOpen(true);
   };
 
-  const handleOpenEditService = (service: typeof MOCK_SERVICES[0] & { duration?: number; icon?: string }) => {
+  const handleOpenEditService = (service: ServiceItem) => {
     setEditingServiceId(service.id);
     setName(service.name);
     setPrice(service.price.toString());
@@ -38,36 +42,23 @@ export default function ServicesPage() {
     setIsSheetOpen(true);
   };
 
-  const handleSaveService = () => {
+  const handleSaveService = async () => {
     if (!name.trim() || !price) return;
     const parsedPrice = parseFloat(price) || 0;
     const parsedDuration = parseInt(duration, 10) || 60;
 
-    if (editingServiceId) {
-      // Edit
-      const updated = services.map(s => {
-        if (s.id === editingServiceId) {
-          return { ...s, name, price: parsedPrice, duration: parsedDuration, icon: selectedIcon };
-        }
-        return s;
-      });
-      const mockIdx = MOCK_SERVICES.findIndex(s => s.id === editingServiceId);
-      if (mockIdx !== -1) {
-        MOCK_SERVICES[mockIdx] = { ...MOCK_SERVICES[mockIdx], name, price: parsedPrice, duration: parsedDuration, icon: selectedIcon };
-      }
-      setServices(updated);
-    } else {
-      // Add new
-      const newService = {
-        id: Math.random().toString(36).substring(7),
-        name,
-        price: parsedPrice,
-        duration: parsedDuration,
-        icon: selectedIcon,
-      };
-      MOCK_SERVICES.push(newService);
-      setServices([...MOCK_SERVICES]);
-    }
+    const targetId = editingServiceId || Math.random().toString(36).substring(7);
+    const serviceToSave: ServiceItem = {
+      id: targetId,
+      name,
+      price: parsedPrice,
+      duration: parsedDuration,
+      icon: selectedIcon,
+    };
+
+    await saveService(serviceToSave);
+    const updated = await getServices();
+    setServices(updated);
 
     setName("");
     setPrice("");
@@ -76,13 +67,10 @@ export default function ServicesPage() {
     setIsSheetOpen(false);
   };
 
-  const handleDeleteService = () => {
+  const handleDeleteService = async () => {
     if (!editingServiceId) return;
-    const updated = services.filter(s => s.id !== editingServiceId);
-    const mockIdx = MOCK_SERVICES.findIndex(s => s.id === editingServiceId);
-    if (mockIdx !== -1) {
-      MOCK_SERVICES.splice(mockIdx, 1);
-    }
+    await deleteService(editingServiceId);
+    const updated = await getServices();
     setServices(updated);
     setIsSheetOpen(false);
   };

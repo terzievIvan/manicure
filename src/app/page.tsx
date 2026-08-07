@@ -3,7 +3,17 @@
 import { useState, useEffect } from "react";
 import { Plus, CalendarDays, Trash2, User, Clock, Sparkles, FileText, Calendar as CalendarIcon, Check, CheckCircle2, PlayCircle, ChevronDown, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { MOCK_APPOINTMENTS, MOCK_CLIENTS, MOCK_SERVICES } from "@/lib/supabase";
+import { 
+  getAppointments, 
+  saveAppointment, 
+  updateAppointmentStatus, 
+  deleteAppointment, 
+  getClients, 
+  getServices, 
+  AppointmentItem, 
+  ClientItem, 
+  ServiceItem 
+} from "@/lib/supabase";
 import { format, addDays } from "date-fns";
 import { ru } from "date-fns/locale";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -17,7 +27,9 @@ export default function SchedulePage() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<"week" | "month">("week");
   const [mounted, setMounted] = useState(false);
-  const [appointments, setAppointments] = useState(MOCK_APPOINTMENTS);
+  const [appointments, setAppointments] = useState<AppointmentItem[]>([]);
+  const [clientsList, setClientsList] = useState<ClientItem[]>([]);
+  const [servicesList, setServicesList] = useState<ServiceItem[]>([]);
 
   // Form & Edit state
   const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -29,12 +41,24 @@ export default function SchedulePage() {
   const [newTime, setNewTime] = useState("10:00");
   const [newNotes, setNewNotes] = useState("");
 
+  const refreshData = async () => {
+    const [apps, cls, srvs] = await Promise.all([
+      getAppointments(),
+      getClients(),
+      getServices(),
+    ]);
+    setAppointments(apps);
+    setClientsList(cls);
+    setServicesList(srvs);
+  };
+
   useEffect(() => {
     setMounted(true);
+    refreshData();
   }, []);
 
   // Dynamic status calculator (В ожидании / В работе / Завершен)
-  const getAppointmentStatus = (app: typeof MOCK_APPOINTMENTS[0]) => {
+  const getAppointmentStatus = (app: AppointmentItem) => {
     if (app.status === "Завершен") return "Завершен";
 
     const now = new Date();
@@ -80,7 +104,7 @@ export default function SchedulePage() {
     setIsSheetOpen(true);
   };
 
-  const handleEditClick = (app: typeof MOCK_APPOINTMENTS[0] & { serviceIds?: string[] }) => {
+  const handleEditClick = (app: AppointmentItem) => {
     setEditingAppointmentId(app.id);
     setNewClientId(app.clientId);
     setNewServiceIds(app.serviceIds || (app.serviceId ? [app.serviceId] : []));
@@ -99,26 +123,16 @@ export default function SchedulePage() {
     }
   };
 
-  const handleCompleteSession = (id: string) => {
-    const updated = appointments.map((app) => {
-      if (app.id === id) {
-        return { ...app, status: "Завершен" };
-      }
-      return app;
-    });
-
-    const index = MOCK_APPOINTMENTS.findIndex(a => a.id === id);
-    if (index !== -1) {
-      MOCK_APPOINTMENTS[index].status = "Завершен";
-    }
-    setAppointments(updated);
+  const handleCompleteSession = async (id: string) => {
+    await updateAppointmentStatus(id, "Завершен");
+    await refreshData();
   };
 
-  const handleSaveAppointment = () => {
+  const handleSaveAppointment = async () => {
     if (!newClientId || newServiceIds.length === 0 || !newDate || !newTime) return;
 
-    const client = MOCK_CLIENTS.find(c => c.id === newClientId);
-    const selectedServices = MOCK_SERVICES.filter(s => newServiceIds.includes(s.id));
+    const client = clientsList.find(c => c.id === newClientId);
+    const selectedServices = servicesList.filter(s => newServiceIds.includes(s.id));
     if (!client || selectedServices.length === 0) return;
 
     const serviceName = selectedServices.map(s => s.name).join(", ");
@@ -130,65 +144,37 @@ export default function SchedulePage() {
     const endDate = new Date(startDate.getTime() + totalDuration * 60000);
     const endTime = endDate.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
 
-    if (editingAppointmentId) {
-      const updated = appointments.map((app) => {
-        if (app.id === editingAppointmentId) {
-          return {
-            ...app,
-            clientId: client.id,
-            clientName: client.name,
-            serviceId: newServiceIds[0],
-            serviceIds: newServiceIds,
-            serviceName: `${serviceName} (${totalPrice} CHF)`,
-            date: newDate,
-            startTime: newTime,
-            endTime: endTime,
-            notes: newNotes,
-          };
-        }
-        return app;
-      });
-      const index = MOCK_APPOINTMENTS.findIndex(a => a.id === editingAppointmentId);
-      if (index !== -1) {
-        MOCK_APPOINTMENTS[index] = updated.find(a => a.id === editingAppointmentId)!;
-      }
-      setAppointments(updated);
-    } else {
-      const newAppointment = {
-        id: Math.random().toString(36).substring(7),
-        clientId: client.id,
-        clientName: client.name,
-        serviceId: newServiceIds[0],
-        serviceIds: newServiceIds,
-        serviceName: `${serviceName} (${totalPrice} CHF)`,
-        date: newDate,
-        startTime: newTime,
-        endTime: endTime,
-        status: 'Ожидает',
-        notes: newNotes,
-      };
+    const targetId = editingAppointmentId || Math.random().toString(36).substring(7);
 
-      MOCK_APPOINTMENTS.push(newAppointment);
-      setAppointments([...MOCK_APPOINTMENTS]);
-    }
+    const newAppointment: AppointmentItem = {
+      id: targetId,
+      clientId: client.id,
+      clientName: client.name,
+      serviceId: newServiceIds[0],
+      serviceIds: newServiceIds,
+      serviceName: `${serviceName} (${totalPrice} CHF)`,
+      date: newDate,
+      startTime: newTime,
+      endTime: endTime,
+      status: editingAppointmentId ? (appointments.find(a => a.id === editingAppointmentId)?.status || 'Ожидает') : 'Ожидает',
+      notes: newNotes,
+    };
 
+    await saveAppointment(newAppointment);
+    await refreshData();
     setIsSheetOpen(false);
   };
 
-  const handleDeleteAppointment = () => {
+  const handleDeleteAppointment = async () => {
     if (!editingAppointmentId) return;
-    const filtered = appointments.filter(a => a.id !== editingAppointmentId);
-    const mockIdx = MOCK_APPOINTMENTS.findIndex(a => a.id === editingAppointmentId);
-    if (mockIdx !== -1) {
-      MOCK_APPOINTMENTS.splice(mockIdx, 1);
-    }
-    setAppointments(filtered);
+    await deleteAppointment(editingAppointmentId);
+    await refreshData();
     setIsSheetOpen(false);
   };
 
-  const selectedServicesList = MOCK_SERVICES.filter(s => newServiceIds.includes(s.id));
-  const totalPrice = newServiceIds.reduce((sum, id) => sum + (MOCK_SERVICES.find(s => s.id === id)?.price || 0), 0);
-  const totalDuration = newServiceIds.reduce((sum, id) => sum + (MOCK_SERVICES.find(s => s.id === id)?.duration || 60), 0);
+  const selectedServicesList = servicesList.filter(s => newServiceIds.includes(s.id));
+  const totalPrice = newServiceIds.reduce((sum, id) => sum + (servicesList.find(s => s.id === id)?.price || 0), 0);
+  const totalDuration = newServiceIds.reduce((sum, id) => sum + (servicesList.find(s => s.id === id)?.duration || 60), 0);
   const currentEditingApp = appointments.find(a => a.id === editingAppointmentId);
 
   const formatDuration = (mins: number) => {
@@ -394,11 +380,11 @@ export default function SchedulePage() {
               <Select value={newClientId} onValueChange={(val) => setNewClientId(val || "")}>
                 <SelectTrigger id="client" className="w-full h-15 rounded-2xl text-base font-semibold bg-card hover:bg-muted/30 border border-border/80 px-4 shadow-xs transition-all text-foreground">
                   <SelectValue>
-                    {MOCK_CLIENTS.find(c => c.id === newClientId)?.name || "Выберите клиента..."}
+                    {clientsList.find(c => c.id === newClientId)?.name || "Выберите клиента..."}
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent className="p-2 max-h-[350px] rounded-2xl w-[var(--radix-select-trigger-width)] min-w-[320px] shadow-2xl bg-card border border-border/80 backdrop-blur-xl">
-                  {MOCK_CLIENTS.map(c => (
+                  {clientsList.map(c => (
                     <SelectItem 
                       key={c.id} 
                       value={c.id} 
@@ -496,7 +482,7 @@ export default function SchedulePage() {
               {/* Содержимое выпадающего списка услуг */}
               {isServicesDropdownOpen && (
                 <div className="p-2 max-h-[350px] overflow-y-auto rounded-2xl w-full shadow-2xl bg-card border border-border/80 backdrop-blur-xl mt-2 space-y-1 animate-in fade-in-80 slide-in-from-top-2">
-                  {MOCK_SERVICES.map(s => {
+                  {servicesList.map(s => {
                     const isSelected = newServiceIds.includes(s.id);
                     return (
                       <button

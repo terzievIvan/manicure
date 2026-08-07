@@ -1,36 +1,40 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { MOCK_APPOINTMENTS, MOCK_SERVICES } from "@/lib/supabase";
+import { getAppointments, getServices, AppointmentItem, ServiceItem } from "@/lib/supabase";
 import { TrendingUp, CheckCircle2, DollarSign, Award, Calendar } from "lucide-react";
 
 export default function AnalyticsPage() {
   const [mounted, setMounted] = useState(false);
+  const [appointments, setAppointments] = useState<AppointmentItem[]>([]);
+  const [services, setServices] = useState<ServiceItem[]>([]);
 
   useEffect(() => {
     setMounted(true);
+    getAppointments().then(setAppointments);
+    getServices().then(setServices);
   }, []);
 
   if (!mounted) return null;
 
   // Filter completed appointments
-  const completedAppointments = MOCK_APPOINTMENTS.filter(a => a.status === "Завершен");
+  const completedAppointments = appointments.filter(a => a.status === "Завершен");
 
   // Helper to extract total revenue from appointment
-  const calculateAppointmentPrice = (app: typeof MOCK_APPOINTMENTS[0]) => {
+  const calculateAppointmentPrice = (app: AppointmentItem) => {
     // If appointment has serviceName with (X CHF)
     const match = app.serviceName.match(/\((\d+)\s*CHF\)/);
     if (match) {
       return parseInt(match[1], 10);
     }
     // Fallback to service lookup
-    const service = MOCK_SERVICES.find(s => s.id === app.serviceId);
+    const service = services.find(s => s.id === app.serviceId);
     return service ? service.price : 85;
   };
 
   const totalRevenue = completedAppointments.reduce((sum, app) => sum + calculateAppointmentPrice(app), 0);
   const completedCount = completedAppointments.length;
-  const pendingCount = MOCK_APPOINTMENTS.filter(a => a.status !== "Завершен").length;
+  const pendingCount = appointments.filter(a => a.status !== "Завершен").length;
   const avgCheck = completedCount > 0 ? Math.round(totalRevenue / completedCount) : 0;
 
   return (

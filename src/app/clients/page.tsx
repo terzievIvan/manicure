@@ -1,18 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, Plus, Phone } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { MOCK_CLIENTS } from "@/lib/supabase";
+import { getClients, saveClient, ClientItem } from "@/lib/supabase";
 import Link from "next/link";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Label } from "@/components/ui/label";
 
 export default function ClientsPage() {
   const [search, setSearch] = useState("");
-  const [clients, setClients] = useState(MOCK_CLIENTS);
+  const [clients, setClients] = useState<ClientItem[]>([]);
   
+  useEffect(() => {
+    getClients().then(setClients);
+  }, []);
+
   // Sheet state
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   
@@ -26,18 +30,19 @@ export default function ClientsPage() {
     client.phone.includes(search)
   );
 
-  const handleAddClient = () => {
+  const handleAddClient = async () => {
     if (!name.trim()) return;
 
-    const newClient = {
+    const newClient: ClientItem = {
       id: Math.random().toString(36).substring(7),
       name,
       phone,
-      lastVisit: new Date().toISOString(),
+      lastVisit: new Date().toISOString().split('T')[0],
     };
 
-    MOCK_CLIENTS.push(newClient);
-    setClients([...MOCK_CLIENTS]);
+    await saveClient(newClient);
+    const updated = await getClients();
+    setClients(updated);
     
     // Reset form and close sheet
     setName("");
@@ -74,7 +79,7 @@ export default function ClientsPage() {
                     <Phone className="h-4 w-4 mr-1" />
                     {client.phone}
                   </div>
-                  <span className="text-xs">Был(а): {new Date(client.lastVisit).toLocaleDateString('ru-RU')}</span>
+                  <span className="text-xs">Был(а): {client.lastVisit ? new Date(client.lastVisit).toLocaleDateString('ru-RU') : "Недавно"}</span>
                 </div>
               </div>
             </Link>
