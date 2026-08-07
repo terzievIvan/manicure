@@ -240,7 +240,7 @@ export default function SchedulePage() {
             })}
           </div>
         ) : (
-          <div className="flex justify-center pb-2 px-1">
+          <div className="flex justify-center pb-2 px-1 max-w-full overflow-hidden">
             <Calendar
               mode="single"
               selected={selectedDate}
@@ -248,7 +248,7 @@ export default function SchedulePage() {
                 if (date) setSelectedDate(date);
               }}
               locale={ru}
-              className="rounded-2xl border bg-card text-card-foreground shadow-sm w-full p-3 [--cell-size:3.3rem]"
+              className="rounded-2xl border bg-card text-card-foreground shadow-sm w-full p-2 sm:p-3 [--cell-size:2.6rem] sm:[--cell-size:3.3rem] max-w-full"
               components={{
                 DayButton: ({ day, modifiers, ...props }) => {
                   const dateStr = format(day.date, "yyyy-MM-dd");
@@ -409,29 +409,29 @@ export default function SchedulePage() {
             </div>
             
             {/* Дата и Время */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-2">
+            <div className="flex gap-3 w-full">
+              <div className="flex-1 space-y-2 min-w-0">
                 <Label htmlFor="date" className="flex items-center text-base font-semibold">
-                  <CalendarIcon className="h-5 w-5 text-primary mr-2" />
-                  Дата
+                  <CalendarIcon className="h-5 w-5 text-primary mr-2 shrink-0" />
+                  <span className="truncate">Дата</span>
                 </Label>
                 <Input 
                   type="date" 
                   id="date" 
-                  className="h-14 rounded-2xl text-base font-medium bg-card border-border/80 block px-4 shadow-xs" 
+                  className="h-14 rounded-2xl text-base font-medium bg-card border-border/80 w-full px-3 sm:px-4 shadow-xs appearance-none" 
                   value={newDate}
                   onChange={(e) => setNewDate(e.target.value)}
                 />
               </div>
-              <div className="space-y-2">
+              <div className="flex-1 space-y-2 min-w-0">
                 <Label htmlFor="time" className="flex items-center text-base font-semibold">
-                  <Clock className="h-5 w-5 text-primary mr-2" />
-                  Время
+                  <Clock className="h-5 w-5 text-primary mr-2 shrink-0" />
+                  <span className="truncate">Время</span>
                 </Label>
                 <Input 
                   type="time" 
                   id="time" 
-                  className="h-14 rounded-2xl text-base font-medium bg-card border-border/80 block px-4 shadow-xs" 
+                  className="h-14 rounded-2xl text-base font-medium bg-card border-border/80 w-full px-3 sm:px-4 shadow-xs appearance-none" 
                   value={newTime}
                   onChange={(e) => setNewTime(e.target.value)}
                 />
