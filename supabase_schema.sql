@@ -1,5 +1,10 @@
--- 1. Создание таблицы Клиентов
-CREATE TABLE IF NOT EXISTS public.clients (
+-- 0. Сброс старых таблиц и политик (если они создавались с типом UUID)
+DROP TABLE IF EXISTS public.appointments CASCADE;
+DROP TABLE IF EXISTS public.services CASCADE;
+DROP TABLE IF EXISTS public.clients CASCADE;
+
+-- 1. Создание таблицы Клиентов (id TEXT для универсальной совместимости)
+CREATE TABLE public.clients (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
     phone TEXT,
@@ -8,7 +13,7 @@ CREATE TABLE IF NOT EXISTS public.clients (
 );
 
 -- 2. Создание таблицы Услуг
-CREATE TABLE IF NOT EXISTS public.services (
+CREATE TABLE public.services (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
     price NUMERIC NOT NULL,
@@ -18,7 +23,7 @@ CREATE TABLE IF NOT EXISTS public.services (
 );
 
 -- 3. Создание таблицы Записей (Расписание)
-CREATE TABLE IF NOT EXISTS public.appointments (
+CREATE TABLE public.appointments (
     id TEXT PRIMARY KEY,
     client_id TEXT REFERENCES public.clients(id) ON DELETE SET NULL,
     client_name TEXT NOT NULL,
@@ -38,30 +43,22 @@ ALTER TABLE public.clients ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.services ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.appointments ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Allow public read access on clients" ON public.clients FOR SELECT USING (true);
-CREATE POLICY "Allow public insert/update access on clients" ON public.clients FOR ALL USING (true);
-
-CREATE POLICY "Allow public read access on services" ON public.services FOR SELECT USING (true);
-CREATE POLICY "Allow public insert/update access on services" ON public.services FOR ALL USING (true);
-
-CREATE POLICY "Allow public read access on appointments" ON public.appointments FOR SELECT USING (true);
-CREATE POLICY "Allow public insert/update access on appointments" ON public.appointments FOR ALL USING (true);
+CREATE POLICY "Allow public all access on clients" ON public.clients FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Allow public all access on services" ON public.services FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Allow public all access on appointments" ON public.appointments FOR ALL USING (true) WITH CHECK (true);
 
 -- 4. Заполнение начальными данными (Seed Data)
 INSERT INTO public.clients (id, name, phone, last_visit) VALUES
 ('1', 'Анна Смирнова', '+41 79 123 45 67', '2023-10-01'),
 ('2', 'Елена Попова', '+41 78 765 43 21', '2023-10-15'),
-('3', 'Мария Иванова', '+41 76 111 22 33', '2023-09-20')
-ON CONFLICT (id) DO NOTHING;
+('3', 'Мария Иванова', '+41 76 111 22 33', '2023-09-20');
 
 INSERT INTO public.services (id, name, price, duration, icon) VALUES
 ('1', 'Маникюр + Гель-лак', 85, 90, 'Sparkles'),
 ('2', 'Наращивание ногтей', 140, 120, 'Wand2'),
 ('3', 'Педикюр', 95, 60, 'Footprints'),
-('4', 'Снятие', 20, 30, 'Eraser')
-ON CONFLICT (id) DO NOTHING;
+('4', 'Снятие', 20, 30, 'Eraser');
 
 INSERT INTO public.appointments (id, client_id, client_name, service_id, service_ids, service_name, date, start_time, end_time, status) VALUES
 ('1', '1', 'Анна Смирнова', '1', ARRAY['1'], 'Маникюр + Гель-лак (85 CHF)', CURRENT_DATE::text, '10:00', '11:30', 'Ожидает'),
-('2', '2', 'Елена Попова', '3', ARRAY['3'], 'Педикюр (95 CHF)', CURRENT_DATE::text, '13:00', '14:00', 'Ожидает')
-ON CONFLICT (id) DO NOTHING;
+('2', '2', 'Елена Попова', '3', ARRAY['3'], 'Педикюр (95 CHF)', CURRENT_DATE::text, '13:00', '14:00', 'Ожидает');
