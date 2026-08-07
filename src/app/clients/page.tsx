@@ -78,17 +78,9 @@ export default function ClientsPage() {
         {filteredClients.length > 0 ? (
           filteredClients.map(client => (
             <Link href={`/clients/${client.id}`} key={client.id} className="block">
-              <div className="bg-card text-card-foreground p-4 rounded-2xl shadow-sm ring-1 ring-border/50 flex flex-col gap-2 hover:bg-muted/50 transition-colors relative group">
+              <div className="bg-card text-card-foreground p-4 rounded-2xl shadow-sm ring-1 ring-border/50 flex flex-col gap-2 hover:bg-muted/50 transition-colors">
                 <div className="flex justify-between items-center">
                   <span className="font-semibold text-lg">{client.name}</span>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
-                    onClick={(e) => handleDeleteClient(client.id, e)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
                 </div>
                 <div className="flex justify-between items-center text-muted-foreground">
                   <div className="flex items-center text-sm text-primary">

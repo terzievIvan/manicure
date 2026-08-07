@@ -13,7 +13,7 @@ export default function EditClientPage({ params }: { params: Promise<{ id: strin
   const { id } = use(params);
   
   const [client, setClient] = useState<ClientItem>({ id: "", name: "", phone: "", lastVisit: "" });
-  const [notes, setNotes] = useState("");
+  const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
 
   useEffect(() => {
     getClients().then((clients) => {
@@ -30,8 +30,9 @@ export default function EditClientPage({ params }: { params: Promise<{ id: strin
     router.back();
   };
 
-  const handleDelete = async () => {
+  const handleConfirmDelete = async () => {
     await deleteClient(id);
+    setIsConfirmDeleteOpen(false);
     router.back();
   };
 
@@ -44,7 +45,12 @@ export default function EditClientPage({ params }: { params: Promise<{ id: strin
           </Button>
           <h1 className="text-2xl font-bold">Редактировать</h1>
         </div>
-        <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={handleDelete}>
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="text-destructive hover:text-destructive hover:bg-destructive/10 rounded-xl" 
+          onClick={() => setIsConfirmDeleteOpen(true)}
+        >
           <Trash2 className="h-5 w-5" />
         </Button>
       </div>
@@ -86,6 +92,39 @@ export default function EditClientPage({ params }: { params: Promise<{ id: strin
           Сохранить изменения
         </Button>
       </div>
+
+      {/* Всплывающее окно подтверждения удаления */}
+      {isConfirmDeleteOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in-80 duration-200">
+          <div className="bg-card text-card-foreground p-6 rounded-3xl max-w-sm w-full shadow-2xl border border-border/80 text-center space-y-4">
+            <div className="mx-auto w-12 h-12 rounded-2xl bg-destructive/10 text-destructive flex items-center justify-center">
+              <Trash2 className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-foreground">Удалить клиента?</h3>
+              <p className="text-sm text-muted-foreground mt-1">
+                Вы уверены, что хотите удалить клиента <span className="font-semibold text-foreground">"{client.name}"</span>? Это действие невозможно отменить.
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-3 pt-2">
+              <Button 
+                variant="outline" 
+                className="h-12 rounded-xl font-semibold border-border/80" 
+                onClick={() => setIsConfirmDeleteOpen(false)}
+              >
+                Отмена
+              </Button>
+              <Button 
+                variant="destructive" 
+                className="h-12 rounded-xl font-semibold bg-destructive text-destructive-foreground hover:bg-destructive/90" 
+                onClick={handleConfirmDelete}
+              >
+                Удалить
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
