@@ -66,6 +66,22 @@ export default function SettingsPage() {
     }
   };
 
+  const handleSendTestNotification = async () => {
+    if (!("serviceWorker" in navigator)) return;
+    try {
+      const registration = await navigator.serviceWorker.ready;
+      await registration.showNotification("Запись через 1 час 💅", {
+        body: "Анна Смирнова — Маникюр с покрытием (15:00)",
+        icon: "/icon-192x192.png",
+        badge: "/icon-192x192.png",
+        data: { url: "/" },
+      });
+    } catch (e) {
+      console.error("Test notification error:", e);
+      alert("Не удалось отправить тестовое уведомление.");
+    }
+  };
+
   if (!mounted) return null;
 
   return (
@@ -84,9 +100,18 @@ export default function SettingsPage() {
         </div>
 
         {permission === "granted" ? (
-          <div className="mt-4 p-3 bg-emerald-500/10 text-emerald-600 rounded-xl flex items-center text-sm font-medium">
-            <Info className="w-5 h-5 mr-2 shrink-0" />
-            Уведомления включены
+          <div className="mt-4 space-y-3">
+            <div className="p-3 bg-emerald-500/10 text-emerald-600 rounded-xl flex items-center text-sm font-medium">
+              <Info className="w-5 h-5 mr-2 shrink-0" />
+              Уведомления включены
+            </div>
+            <Button
+              onClick={handleSendTestNotification}
+              variant="outline"
+              className="w-full h-11 rounded-2xl text-sm font-semibold border-primary/20 text-primary hover:bg-primary/5"
+            >
+              🚀 Отправить тестовое уведомление
+            </Button>
           </div>
         ) : (
           <div className="mt-4">
