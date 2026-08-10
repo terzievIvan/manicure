@@ -326,13 +326,15 @@ export async function getExpenses(): Promise<ExpenseItem[]> {
     try {
       const { data, error } = await supabase.from('expenses').select('*');
       if (!error && data) {
-        return data.map((e: any) => ({
+        const mapped = data.map((e: any) => ({
           id: String(e.id),
           title: e.title,
           amount: Number(e.amount),
           date: e.date,
           category: e.category || 'Материалы',
         }));
+        setLocal('manic_expenses', mapped);
+        return mapped;
       }
     } catch (e) {
       console.error('Error fetching expenses from Supabase:', e);

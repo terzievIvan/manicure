@@ -62,3 +62,18 @@ INSERT INTO public.services (id, name, price, duration, icon) VALUES
 INSERT INTO public.appointments (id, client_id, client_name, service_id, service_ids, service_name, date, start_time, end_time, status) VALUES
 ('1', '1', 'Анна Смирнова', '1', ARRAY['1'], 'Маникюр + Гель-лак (85 CHF)', CURRENT_DATE::text, '10:00', '11:30', 'Ожидает'),
 ('2', '2', 'Елена Попова', '3', ARRAY['3'], 'Педикюр (95 CHF)', CURRENT_DATE::text, '13:00', '14:00', 'Ожидает');
+
+-- 4. Таблица Расходов (Expenses)
+CREATE TABLE IF NOT EXISTS public.expenses (
+    id TEXT PRIMARY KEY,
+    title TEXT NOT NULL,
+    amount NUMERIC NOT NULL,
+    date TEXT NOT NULL,
+    category TEXT DEFAULT 'Материалы',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+ALTER TABLE public.expenses ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow public all access on expenses" ON public.expenses;
+CREATE POLICY "Allow public all access on expenses" ON public.expenses FOR ALL USING (true) WITH CHECK (true);
+
