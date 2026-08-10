@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import { isIosStandalone } from "@/lib/isIosStandalone";
 import { useTheme } from "next-themes";
-import { Bell, Info, Moon, Sun, Palette } from "lucide-react";
+import { Bell, Info, Moon, Sun, Palette, UserCircle, LogOut } from "lucide-react";
+import { useAuth } from "@/components/AuthProvider";
 import { Button } from "@/components/ui/button";
 
 // Mock function for saving subscription
@@ -38,6 +39,7 @@ export default function SettingsPage() {
   const [permission, setPermission] = useState<NotificationPermission>("default");
   const [isSubscribing, setIsSubscribing] = useState(false);
   const { theme, setTheme } = useTheme();
+  const { user, signOut } = useAuth();
 
   useEffect(() => {
     setMounted(true);
@@ -187,6 +189,27 @@ export default function SettingsPage() {
             <span className={`text-xs font-semibold ${theme === 'pink' ? 'text-primary' : 'text-muted-foreground'}`}>Розовая</span>
           </button>
         </div>
+      </div>
+
+      <div className="bg-card text-card-foreground p-5 rounded-3xl shadow-sm ring-1 ring-border/50">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="p-2.5 bg-primary/10 rounded-2xl">
+            <UserCircle className="w-6 h-6 text-primary" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold">Аккаунт</h2>
+            <p className="text-sm text-muted-foreground">{user?.email || "Не авторизован"}</p>
+          </div>
+        </div>
+        
+        <Button 
+          variant="destructive"
+          onClick={signOut}
+          className="w-full h-12 rounded-2xl font-bold text-base flex items-center justify-center gap-2"
+        >
+          <LogOut className="w-5 h-5" />
+          Выйти из аккаунта
+        </Button>
       </div>
     </div>
   );
