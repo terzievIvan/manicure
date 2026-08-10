@@ -6,6 +6,8 @@ import { InstallPrompt } from "@/components/InstallPrompt";
 
 import { Sidebar } from "@/components/Sidebar";
 
+import { ThemeProvider } from "@/components/theme-provider";
+
 const inter = Inter({ subsets: ["latin", "cyrillic"] });
 
 export const viewport: Viewport = {
@@ -34,16 +36,23 @@ export default function RootLayout({
   return (
     <html lang="ru" suppressHydrationWarning>
       <body className={`${inter.className} overscroll-none antialiased bg-muted/30 md:bg-background`}>
-        <div className="flex md:max-w-5xl lg:max-w-6xl mx-auto min-h-screen bg-background relative md:shadow-2xl md:ring-1 md:ring-border/5 flex-col md:flex-row pb-[env(safe-area-inset-bottom)] md:pb-0">
-          <Sidebar />
-          <div className="flex-1 max-w-md mx-auto md:max-w-none w-full relative bg-background flex flex-col min-h-screen">
-            <main className="flex-1 pb-16 md:pb-8 overflow-y-auto w-full max-w-3xl mx-auto">
-              {children}
-            </main>
-            <BottomNav />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem={false}
+          themes={["light", "dark", "pink"]}
+        >
+          <div className="flex md:max-w-5xl lg:max-w-6xl mx-auto min-h-screen bg-background relative md:shadow-2xl md:ring-1 md:ring-border/5 flex-col md:flex-row pb-[env(safe-area-inset-bottom)] md:pb-0">
+            <Sidebar />
+            <div className="flex-1 max-w-md mx-auto md:max-w-none w-full relative bg-background flex flex-col min-h-screen">
+              <main className="flex-1 pb-16 md:pb-8 overflow-y-auto w-full max-w-3xl mx-auto">
+                {children}
+              </main>
+              <BottomNav />
+            </div>
+            <InstallPrompt />
           </div>
-          <InstallPrompt />
-        </div>
+        </ThemeProvider>
       </body>
     </html>
   );

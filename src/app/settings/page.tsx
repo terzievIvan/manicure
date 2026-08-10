@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { isIosStandalone } from "@/lib/isIosStandalone";
-import { Bell, Info } from "lucide-react";
+import { useTheme } from "next-themes";
+import { Bell, Info, Moon, Sun, Palette } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 // Mock function for saving subscription
@@ -36,6 +37,7 @@ export default function SettingsPage() {
   const [isStandalone, setIsStandalone] = useState(false);
   const [permission, setPermission] = useState<NotificationPermission>("default");
   const [isSubscribing, setIsSubscribing] = useState(false);
+  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     setMounted(true);
@@ -147,6 +149,44 @@ export default function SettingsPage() {
             )}
           </div>
         )}
+      </div>
+
+      <div className="bg-card text-card-foreground p-5 rounded-3xl shadow-sm ring-1 ring-border/50">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="p-2.5 bg-primary/10 rounded-2xl">
+            <Palette className="w-6 h-6 text-primary" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold">Оформление</h2>
+            <p className="text-sm text-muted-foreground">Тема приложения</p>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-3 gap-3">
+          <button 
+            onClick={() => setTheme('light')}
+            className={`flex flex-col items-center justify-center p-3 rounded-2xl border-2 transition-all ${theme === 'light' ? 'border-primary bg-primary/5' : 'border-border bg-card hover:bg-muted/50'}`}
+          >
+            <Sun className={`w-6 h-6 mb-2 ${theme === 'light' ? 'text-primary' : 'text-muted-foreground'}`} />
+            <span className={`text-xs font-semibold ${theme === 'light' ? 'text-primary' : 'text-muted-foreground'}`}>Светлая</span>
+          </button>
+          
+          <button 
+            onClick={() => setTheme('dark')}
+            className={`flex flex-col items-center justify-center p-3 rounded-2xl border-2 transition-all ${theme === 'dark' ? 'border-primary bg-primary/5' : 'border-border bg-card hover:bg-muted/50'}`}
+          >
+            <Moon className={`w-6 h-6 mb-2 ${theme === 'dark' ? 'text-primary' : 'text-muted-foreground'}`} />
+            <span className={`text-xs font-semibold ${theme === 'dark' ? 'text-primary' : 'text-muted-foreground'}`}>Тёмная</span>
+          </button>
+
+          <button 
+            onClick={() => setTheme('pink')}
+            className={`flex flex-col items-center justify-center p-3 rounded-2xl border-2 transition-all ${theme === 'pink' ? 'border-primary bg-primary/5' : 'border-border bg-card hover:bg-muted/50'}`}
+          >
+            <div className={`w-6 h-6 rounded-full mb-2 ${theme === 'pink' ? 'bg-primary' : 'bg-muted-foreground/30'}`} style={theme !== 'pink' ? { backgroundColor: '#f472b6' } : {}} />
+            <span className={`text-xs font-semibold ${theme === 'pink' ? 'text-primary' : 'text-muted-foreground'}`}>Розовая</span>
+          </button>
+        </div>
       </div>
     </div>
   );
