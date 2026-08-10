@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Calendar, Users, BarChart2, Sparkles, Settings } from "lucide-react";
+import { Calendar, Users, BarChart2, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [

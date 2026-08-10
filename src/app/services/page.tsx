@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { Plus, Sparkles, Trash2, Edit2, Tag, Clock, Settings } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import { getServices, saveService, deleteService, ServiceItem } from "@/lib/supabase";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Label } from "@/components/ui/label";
@@ -92,15 +92,15 @@ export default function ServicesPage() {
           <h1 className="text-2xl font-bold">Услуги</h1>
           <p className="text-xs text-muted-foreground mt-0.5">Управление прайс-листом</p>
         </div>
-        <div className="flex gap-2 items-center">
-          <Link href="/settings" passHref>
-            <Button variant="outline" size="icon" className="rounded-xl h-10 w-10 shrink-0 border-border/80 text-muted-foreground hover:text-foreground">
-              <Settings className="h-5 w-5" />
+        <div className="flex items-center gap-2">
+          <Link href="/settings">
+            <Button variant="outline" size="icon" className="rounded-xl h-10 w-10">
+              <Settings className="h-5 w-5 text-foreground" />
             </Button>
           </Link>
           <Button 
             onClick={handleOpenNewService} 
-            className="rounded-xl px-4 h-10 font-semibold gap-1.5 shadow-sm"
+            className="rounded-xl px-4 font-semibold gap-1.5 shadow-sm h-10"
           >
             <Plus className="h-4 w-4" />
             Добавить
