@@ -16,6 +16,21 @@ const saveSubscriptionToSupabase = async (subscription: PushSubscription) => {
 // Generated VAPID public key for Web Push
 const VAPID_PUBLIC_KEY = "BDLYQIuqjjuNlz5pxM0jFVC3toC1iyZacP5dG7m873y6WUj__EL9NNGNgU-RdGTJ_f9H_A8HFwTe_1uGego1bII";
 
+function urlBase64ToUint8Array(base64String: string) {
+  const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding)
+    .replace(/-/g, '+')
+    .replace(/_/g, '/');
+
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
+
 export default function SettingsPage() {
   const [mounted, setMounted] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
@@ -46,21 +61,22 @@ export default function SettingsPage() {
       if (perm === "granted") {
         const registration = await navigator.serviceWorker.ready;
         
-        // Subscribe to push service
+        // Subscribe to push service using converted Uint8Array applicationServerKey
+        const convertedVapidKey = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
         const subscription = await registration.pushManager.subscribe({
           userVisibleOnly: true,
-          applicationServerKey: VAPID_PUBLIC_KEY,
+          applicationServerKey: convertedVapidKey,
         });
 
         // Save to DB
         await saveSubscriptionToSupabase(subscription);
         alert("Уведомления успешно включены!");
       } else {
-        alert("Вы отклонили запрос на уведомления.");
+        alert("Вы отклонили запрос на уведомления в настройках iOS.");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error subscribing to push notifications:", error);
-      alert("Произошла ошибка при настройке уведомлений.");
+      alert(`Ошибка настройки уведомлений: ${error?.message || error}`);
     } finally {
       setIsSubscribing(false);
     }
