@@ -306,3 +306,77 @@ export async function deleteAppointment(id: string): Promise<void> {
     }
   }
 }
+
+// --- РАСХОДЫ ---
+export interface ExpenseItem {
+  id: string;
+  title: string;
+  amount: number;
+  date: string;
+  category?: string;
+}
+
+export const MOCK_EXPENSES: ExpenseItem[] = [
+  { id: '1', title: 'Гель-лаки и фрезы', amount: 45, date: new Date().toISOString().split('T')[0], category: 'Материалы' },
+  { id: '2', title: 'Одноразовые пилочки', amount: 20, date: new Date().toISOString().split('T')[0], category: 'Материалы' },
+];
+
+export async function getExpenses(): Promise<ExpenseItem[]> {
+  if (supabase) {
+    try {
+      const { data, error } = await supabase.from('expenses').select('*');
+      if (!error && data) {
+        return data.map((e: any) => ({
+          id: String(e.id),
+          title: e.title,
+          amount: Number(e.amount),
+          date: e.date,
+          category: e.category || 'Материалы',
+        }));
+      }
+    } catch (e) {
+      console.error('Error fetching expenses from Supabase:', e);
+    }
+  }
+  return getLocal('manic_expenses', MOCK_EXPENSES);
+}
+
+export async function saveExpense(expense: ExpenseItem): Promise<void> {
+  const current = getLocal('manic_expenses', MOCK_EXPENSES);
+  const idx = current.findIndex((e) => e.id === expense.id);
+  if (idx !== -1) {
+    current[idx] = expense;
+  } else {
+    current.push(expense);
+  }
+  setLocal('manic_expenses', current);
+
+  if (supabase) {
+    try {
+      await supabase.from('expenses').upsert({
+        id: expense.id,
+        title: expense.title,
+        amount: expense.amount,
+        date: expense.date,
+        category: expense.category || 'Материалы',
+      });
+    } catch (e) {
+      console.error('Error saving expense to Supabase:', e);
+    }
+  }
+}
+
+export async function deleteExpense(id: string): Promise<void> {
+  const current = getLocal('manic_expenses', MOCK_EXPENSES);
+  const updated = current.filter((e) => e.id !== id);
+  setLocal('manic_expenses', updated);
+
+  if (supabase) {
+    try {
+      await supabase.from('expenses').delete().eq('id', id);
+    } catch (e) {
+      console.error('Error deleting expense from Supabase:', e);
+    }
+  }
+}
+
