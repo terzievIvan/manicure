@@ -9,7 +9,7 @@ const navItems = [
   { name: "Расписание", href: "/", icon: Calendar },
   { name: "Клиенты", href: "/clients", icon: Users },
   { name: "Аналитика", href: "/analytics", icon: BarChart2 },
-  { name: "Настройки", href: "/settings", icon: Settings },
+  { name: "Услуги", href: "/services", icon: Sparkles },
 ];
 
 export function BottomNav() {
