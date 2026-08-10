@@ -160,6 +160,15 @@ export default function AnalyticsPage() {
     await refreshData();
   };
 
+  const getSessionPlural = (count: number) => {
+    const mod10 = count % 10;
+    const mod100 = count % 100;
+    if (mod100 >= 11 && mod100 <= 19) return `${count} сеансов`;
+    if (mod10 === 1) return `${count} сеанс`;
+    if (mod10 >= 2 && mod10 <= 4) return `${count} сеанса`;
+    return `${count} сеансов`;
+  };
+
   return (
     <div className="flex flex-col h-full bg-background pt-safe pb-24">
       {/* Sticky Header with Month Filter */}
@@ -237,7 +246,7 @@ export default function AnalyticsPage() {
               <CheckCircle2 className="w-5 h-5" />
               <span className="text-xs font-bold uppercase tracking-wider">Визиты</span>
             </div>
-            <p className="text-2xl font-black mt-3">{completedCount} сеансов</p>
+            <p className="text-2xl font-black mt-3">{getSessionPlural(completedCount)}</p>
           </div>
 
           <div className="bg-card text-card-foreground p-4 rounded-2xl border border-border/50 shadow-xs flex flex-col justify-between">
