@@ -22,6 +22,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar, CalendarDayButton } from "@/components/ui/calendar";
 import { ServiceIcon } from "@/components/ServiceIcon";
+import { useAppBadge } from "@/hooks/useAppBadge";
 
 export default function SchedulePage() {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -30,6 +31,9 @@ export default function SchedulePage() {
   const [appointments, setAppointments] = useState<AppointmentItem[]>([]);
   const [clientsList, setClientsList] = useState<ClientItem[]>([]);
   const [servicesList, setServicesList] = useState<ServiceItem[]>([]);
+
+  // Badging API hook
+  useAppBadge(appointments);
 
   // Form & Edit state
   const [isSheetOpen, setIsSheetOpen] = useState(false);

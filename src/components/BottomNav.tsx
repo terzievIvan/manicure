@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Calendar, Users, BarChart2, Sparkles } from "lucide-react";
+import { Calendar, Users, BarChart2, Sparkles, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { name: "Расписание", href: "/", icon: Calendar },
   { name: "Клиенты", href: "/clients", icon: Users },
   { name: "Аналитика", href: "/analytics", icon: BarChart2 },
-  { name: "Услуги", href: "/services", icon: Sparkles },
+  { name: "Настройки", href: "/settings", icon: Settings },
 ];
 
 export function BottomNav() {
