@@ -82,7 +82,7 @@ export function AuthScreen() {
           <div className="w-16 h-16 bg-primary/10 rounded-3xl flex items-center justify-center mb-6">
             <Sparkles className="w-8 h-8 text-primary" />
           </div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">Manic</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">Manicure</h1>
           <p className="text-muted-foreground mt-2">
             {t("auth.subtitle")}
           </p>

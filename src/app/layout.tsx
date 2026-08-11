@@ -22,12 +22,12 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Manic - Учет клиентов",
+  title: "Manicure - Учет клиентов",
   description: "Система управления записями для маникюрного салона",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Manic",
+    title: "Manicure",
   },
 };
 

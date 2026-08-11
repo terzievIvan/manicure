@@ -2,8 +2,8 @@ import { MetadataRoute } from 'next'
  
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Manic - Салон',
-    short_name: 'Manic',
+    name: 'Manicure - Салон',
+    short_name: 'Manicure',
     description: 'Учет клиентов и записей маникюрного салона',
     start_url: '/',
     display: 'standalone',

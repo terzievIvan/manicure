@@ -19,11 +19,11 @@ export function Sidebar() {
 
   return (
     <div className="hidden md:flex flex-col w-64 border-r border-border bg-background h-screen sticky top-0 py-8 px-4 z-40">
-      <div className="flex items-center gap-3 px-2 mb-10">
-        <div className="w-10 h-10 bg-primary text-primary-foreground rounded-xl flex items-center justify-center font-black text-xl shadow-md">
-          M
+      <div className="flex items-center gap-3 px-3 py-2 mb-4">
+        <div className="w-10 h-10 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center shadow-md">
+          <Sparkles className="w-5 h-5" />
         </div>
-        <span className="text-2xl font-bold tracking-tight">Manic</span>
+        <span className="text-2xl font-bold tracking-tight">Manicure</span>
       </div>
 
       <nav className="flex-1 space-y-2">
