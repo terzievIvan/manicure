@@ -23,6 +23,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar, CalendarDayButton } from "@/components/ui/calendar";
 import { ServiceIcon } from "@/components/ServiceIcon";
 import { useAppBadge } from "@/hooks/useAppBadge";
+import { useCurrency } from "@/components/CurrencyProvider";
 
 export default function SchedulePage() {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -31,6 +32,7 @@ export default function SchedulePage() {
   const [appointments, setAppointments] = useState<AppointmentItem[]>([]);
   const [clientsList, setClientsList] = useState<ClientItem[]>([]);
   const [servicesList, setServicesList] = useState<ServiceItem[]>([]);
+  const { currency } = useCurrency();
 
   // Badging API hook
   useAppBadge(appointments);
@@ -156,7 +158,7 @@ export default function SchedulePage() {
       clientName: client.name,
       serviceId: newServiceIds[0],
       serviceIds: newServiceIds,
-      serviceName: `${serviceName} (${totalPrice} CHF)`,
+      serviceName: `${serviceName} (${totalPrice} ${currency})`,
       date: newDate,
       startTime: newTime,
       endTime: endTime,
@@ -476,7 +478,7 @@ export default function SchedulePage() {
                 <div className="flex items-center gap-2 shrink-0 ml-2">
                   {newServiceIds.length > 0 && (
                     <span className="text-xs font-black text-primary bg-primary/15 px-2.5 py-1 rounded-full">
-                      {totalPrice} CHF • {formatDuration(totalDuration)}
+                      {totalPrice} {currency} • {formatDuration(totalDuration)}
                     </span>
                   )}
                   <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform duration-200 ${isServicesDropdownOpen ? "rotate-180 text-primary" : ""}`} />
@@ -508,7 +510,7 @@ export default function SchedulePage() {
                           <span className="font-semibold text-base text-foreground">{s.name}</span>
                         </div>
                         <div className="text-right">
-                          <span className="text-base font-extrabold text-primary block">{s.price} CHF</span>
+                          <span className="text-base font-extrabold text-primary block">{s.price} {currency}</span>
                           <span className="text-xs font-medium text-muted-foreground">{formatDuration(s.duration || 60)}</span>
                         </div>
                       </button>

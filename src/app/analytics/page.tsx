@@ -33,6 +33,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useCurrency } from "@/components/CurrencyProvider";
 
 const EXPENSE_CATEGORIES = ["Материалы", "Аренда", "Оборудование", "Реклама", "Прочее"];
 
@@ -43,6 +44,7 @@ export default function AnalyticsPage() {
   const [expenses, setExpenses] = useState<ExpenseItem[]>([]);
   const [selectedMonth, setSelectedMonth] = useState<string>("all");
   const [activeTab, setActiveTab] = useState<"income" | "expenses">("income");
+  const { currency } = useCurrency();
 
   // Form state for new expense
   const [isExpenseSheetOpen, setIsExpenseSheetOpen] = useState(false);
@@ -107,7 +109,7 @@ export default function AnalyticsPage() {
 
   // Helper to extract total revenue from appointment
   const calculateAppointmentPrice = (app: AppointmentItem) => {
-    const match = app.serviceName.match(/\((\d+)\s*CHF\)/);
+    const match = app.serviceName.match(/\((\d+)\s*[^\)]+\)/);
     if (match) {
       return parseInt(match[1], 10);
     }
@@ -208,17 +210,17 @@ export default function AnalyticsPage() {
             Чистая прибыль ({formatMonthLabel(selectedMonth).toLowerCase()})
           </p>
           <p className={`text-4xl font-black mt-1 ${netProfit >= 0 ? "text-emerald-400" : "text-rose-400"}`}>
-            {netProfit >= 0 ? `+${netProfit}` : netProfit} CHF
+            {netProfit >= 0 ? `+${netProfit}` : netProfit} {currency}
           </p>
 
           <div className="grid grid-cols-2 gap-2 mt-4 pt-4 border-t border-white/10 text-xs">
             <div className="flex items-center gap-1.5 text-emerald-400 font-semibold">
               <ArrowUpRight className="w-4 h-4 shrink-0" />
-              <span>Доход: +{totalRevenue} CHF</span>
+              <span>Доход: +{totalRevenue} {currency}</span>
             </div>
             <div className="flex items-center gap-1.5 text-rose-400 font-semibold">
               <ArrowDownRight className="w-4 h-4 shrink-0" />
-              <span>Расход: -{totalExpenses} CHF</span>
+              <span>Расход: -{totalExpenses} {currency}</span>
             </div>
           </div>
         </div>
@@ -230,7 +232,7 @@ export default function AnalyticsPage() {
               <TrendingUp className="w-5 h-5" />
               <span className="text-xs font-bold uppercase tracking-wider">Выручка</span>
             </div>
-            <p className="text-2xl font-black mt-3 text-emerald-600 dark:text-emerald-400">+{totalRevenue} CHF</p>
+            <p className="text-2xl font-black mt-3 text-emerald-600 dark:text-emerald-400">+{totalRevenue} {currency}</p>
           </div>
 
           <div className="bg-card text-card-foreground p-4 rounded-2xl border border-border/50 shadow-xs flex flex-col justify-between">
@@ -238,7 +240,7 @@ export default function AnalyticsPage() {
               <TrendingDown className="w-5 h-5" />
               <span className="text-xs font-bold uppercase tracking-wider">Расходы</span>
             </div>
-            <p className="text-2xl font-black mt-3 text-rose-500">-{totalExpenses} CHF</p>
+            <p className="text-2xl font-black mt-3 text-rose-500">-{totalExpenses} {currency}</p>
           </div>
 
           <div className="bg-card text-card-foreground p-4 rounded-2xl border border-border/50 shadow-xs flex flex-col justify-between">
@@ -254,7 +256,7 @@ export default function AnalyticsPage() {
               <Award className="w-5 h-5" />
               <span className="text-xs font-bold uppercase tracking-wider">Средний чек</span>
             </div>
-            <p className="text-2xl font-black mt-3">{avgCheck} CHF</p>
+            <p className="text-2xl font-black mt-3">{avgCheck} {currency}</p>
           </div>
         </div>
 
@@ -298,7 +300,7 @@ export default function AnalyticsPage() {
                       <p className="text-[11px] text-muted-foreground mt-1">{app.date} в {app.startTime}</p>
                     </div>
                     <div className="text-right">
-                      <span className="text-base font-extrabold text-emerald-600 dark:text-emerald-400">+{price} CHF</span>
+                      <span className="text-base font-extrabold text-emerald-600 dark:text-emerald-400">+{price} {currency}</span>
                       <span className="block text-[10px] font-bold text-emerald-600/80 uppercase">Оплачено</span>
                     </div>
                   </div>
@@ -336,7 +338,7 @@ export default function AnalyticsPage() {
                     <p className="text-[11px] text-muted-foreground mt-1">{exp.date}</p>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-base font-extrabold text-rose-500">-{exp.amount} CHF</span>
+                    <span className="text-base font-extrabold text-rose-500">-{exp.amount} {currency}</span>
                     <button
                       onClick={() => handleDeleteExpense(exp.id)}
                       className="p-1.5 text-muted-foreground hover:text-rose-500 rounded-lg transition-colors"
@@ -377,7 +379,7 @@ export default function AnalyticsPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="exp-amount" className="text-base font-semibold">Сумма (CHF)</Label>
+              <Label htmlFor="exp-amount" className="text-base font-semibold">Сумма ({currency})</Label>
               <Input
                 id="exp-amount"
                 type="number"

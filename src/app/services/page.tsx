@@ -9,8 +9,10 @@ import { getServices, saveService, deleteService, ServiceItem } from "@/lib/supa
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Label } from "@/components/ui/label";
 import { ServiceIcon, SERVICE_ICONS } from "@/components/ServiceIcon";
+import { useCurrency } from "@/components/CurrencyProvider";
 
 export default function ServicesPage() {
+  const { currency } = useCurrency();
   const [services, setServices] = useState<ServiceItem[]>([]);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [editingServiceId, setEditingServiceId] = useState<string | null>(null);
@@ -127,7 +129,7 @@ export default function ServicesPage() {
               </div>
 
               <div className="flex items-center gap-3">
-                <span className="font-extrabold text-base text-primary">{service.price} CHF</span>
+                <span className="font-extrabold text-base text-primary">{service.price} {currency}</span>
                 <Edit2 className="h-4 w-4 text-muted-foreground" />
               </div>
             </div>
@@ -209,7 +211,7 @@ export default function ServicesPage() {
               <div className="space-y-2">
                 <Label htmlFor="service-price" className="flex items-center text-sm font-semibold">
                   <Tag className="h-4 w-4 text-primary mr-2" />
-                  Стоимость (CHF)
+                  Стоимость ({currency})
                 </Label>
                 <Input 
                   type="number" 
