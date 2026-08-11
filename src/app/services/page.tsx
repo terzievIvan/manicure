@@ -146,7 +146,7 @@ export default function ServicesPage() {
 
       {/* Sheet для добавления/редактирования услуги */}
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-        <SheetContent side="bottom" className="h-[75vh] rounded-t-3xl flex flex-col pt-6">
+        <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl flex flex-col pt-6">
           <SheetHeader className="mb-4 flex flex-row items-center justify-between border-b pb-3">
             <SheetTitle className="text-left text-2xl font-bold">
               {editingServiceId ? t("services.edit_service") : t("services.new_service")}
@@ -163,7 +163,7 @@ export default function ServicesPage() {
             )}
           </SheetHeader>
 
-          <div className="flex-1 overflow-y-auto space-y-5 px-1 pb-4">
+          <div className="flex-1 overflow-y-auto space-y-5 px-1 pb-6">
             {/* Название услуги */}
             <div className="space-y-2">
               <Label htmlFor="service-name" className="flex items-center text-sm font-semibold">
@@ -185,7 +185,7 @@ export default function ServicesPage() {
                 <Sparkles className="h-4 w-4 text-primary mr-2" />
                 {t("services.icon")}
               </Label>
-              <div className="grid grid-cols-4 sm:grid-cols-8 gap-2 p-2 bg-muted/20 border border-muted/70 rounded-2xl max-h-52 overflow-y-auto">
+              <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2.5 p-3 bg-muted/20 border border-muted/70 rounded-2xl">
                 {SERVICE_ICONS.map((item) => {
                   const isSelected = selectedIcon === item.name;
                   const Icon = item.Icon;
