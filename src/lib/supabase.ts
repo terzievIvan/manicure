@@ -105,19 +105,23 @@ export async function getClients(): Promise<ClientItem[]> {
   if (supabase) {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      const query = supabase.from('clients').select('*');
+      let query = supabase.from('clients').select('*');
       if (user) {
-        query.eq('user_id', user.id);
+        query = query.eq('user_id', user.id);
       }
       
       const { data, error } = await query;
       if (!error && data) {
-        return data.map((c: any) => ({
+        const mapped = data.map((c: any) => ({
           id: String(c.id),
           name: c.name,
           phone: c.phone || '',
           lastVisit: c.last_visit || '',
         }));
+        setLocal('manic_clients', mapped);
+        return mapped;
+      } else if (error) {
+        console.error('Supabase error getClients:', error);
       }
     } catch (e) {
       console.error('Error fetching clients from Supabase:', e);
@@ -151,7 +155,8 @@ export async function saveClient(client: ClientItem): Promise<void> {
         payload.user_id = user.id;
       }
       
-      await supabase.from('clients').upsert(payload);
+      const { error } = await supabase.from('clients').upsert(payload);
+      if (error) console.error('Error saving client to Supabase:', error);
     } catch (e) {
       console.error('Error saving client to Supabase:', e);
     }
@@ -177,20 +182,24 @@ export async function getServices(): Promise<ServiceItem[]> {
   if (supabase) {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      const query = supabase.from('services').select('*');
+      let query = supabase.from('services').select('*');
       if (user) {
-        query.eq('user_id', user.id);
+        query = query.eq('user_id', user.id);
       }
       
       const { data, error } = await query;
       if (!error && data) {
-        return data.map((s: any) => ({
+        const mapped = data.map((s: any) => ({
           id: String(s.id),
           name: s.name,
           price: Number(s.price),
           duration: s.duration || 60,
           icon: s.icon || 'Sparkles',
         }));
+        setLocal('manic_services', mapped);
+        return mapped;
+      } else if (error) {
+        console.error('Supabase error getServices:', error);
       }
     } catch (e) {
       console.error('Error fetching services from Supabase:', e);
@@ -225,7 +234,8 @@ export async function saveService(service: ServiceItem): Promise<void> {
         payload.user_id = user.id;
       }
       
-      await supabase.from('services').upsert(payload);
+      const { error } = await supabase.from('services').upsert(payload);
+      if (error) console.error('Error saving service to Supabase:', error);
     } catch (e) {
       console.error('Error saving service to Supabase:', e);
     }
@@ -251,14 +261,14 @@ export async function getAppointments(): Promise<AppointmentItem[]> {
   if (supabase) {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      const query = supabase.from('appointments').select('*');
+      let query = supabase.from('appointments').select('*');
       if (user) {
-        query.eq('user_id', user.id);
+        query = query.eq('user_id', user.id);
       }
       
       const { data, error } = await query;
       if (!error && data) {
-        return data.map((a: any) => ({
+        const mapped = data.map((a: any) => ({
           id: String(a.id),
           clientId: String(a.client_id || ''),
           clientName: a.client_name,
@@ -271,6 +281,10 @@ export async function getAppointments(): Promise<AppointmentItem[]> {
           status: a.status || 'Ожидает',
           notes: a.notes || '',
         }));
+        setLocal('manic_appointments', mapped);
+        return mapped;
+      } else if (error) {
+        console.error('Supabase error getAppointments:', error);
       }
     } catch (e) {
       console.error('Error fetching appointments from Supabase:', e);
@@ -311,7 +325,8 @@ export async function saveAppointment(appointment: AppointmentItem): Promise<voi
         payload.user_id = user.id;
       }
       
-      await supabase.from('appointments').upsert(payload);
+      const { error } = await supabase.from('appointments').upsert(payload);
+      if (error) console.error('Error saving appointment to Supabase:', error);
     } catch (e) {
       console.error('Error saving appointment to Supabase:', e);
     }
@@ -367,9 +382,9 @@ export async function getExpenses(): Promise<ExpenseItem[]> {
   if (supabase) {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      const query = supabase.from('expenses').select('*');
+      let query = supabase.from('expenses').select('*');
       if (user) {
-        query.eq('user_id', user.id);
+        query = query.eq('user_id', user.id);
       }
       
       const { data, error } = await query;
@@ -383,6 +398,8 @@ export async function getExpenses(): Promise<ExpenseItem[]> {
         }));
         setLocal('manic_expenses', mapped);
         return mapped;
+      } else if (error) {
+        console.error('Supabase error getExpenses:', error);
       }
     } catch (e) {
       console.error('Error fetching expenses from Supabase:', e);
@@ -417,7 +434,8 @@ export async function saveExpense(expense: ExpenseItem): Promise<void> {
         payload.user_id = user.id;
       }
       
-      await supabase.from('expenses').upsert(payload);
+      const { error } = await supabase.from('expenses').upsert(payload);
+      if (error) console.error('Error saving expense to Supabase:', error);
     } catch (e) {
       console.error('Error saving expense to Supabase:', e);
     }

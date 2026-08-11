@@ -52,7 +52,8 @@ export default function ServicesPage() {
     const parsedPrice = parseFloat(price) || 0;
     const parsedDuration = parseInt(duration, 10) || 60;
 
-    const targetId = editingServiceId || Math.random().toString(36).substring(7);
+    const generateId = () => (typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(7));
+    const targetId = editingServiceId || generateId();
     const serviceToSave: ServiceItem = {
       id: targetId,
       name,
