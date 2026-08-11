@@ -15,7 +15,7 @@ import {
   ServiceItem 
 } from "@/lib/supabase";
 import { format, addDays } from "date-fns";
-import { ru } from "date-fns/locale";
+import { getDateFnsLocale, getIntlLocale } from "@/lib/i18n/dateLocale";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -147,10 +147,13 @@ export default function SchedulePage() {
     const totalPrice = selectedServices.reduce((sum, s) => sum + s.price, 0);
     const totalDuration = selectedServices.reduce((sum, s) => sum + (s.duration || 60), 0);
 
+    const dateLocale = getDateFnsLocale(language);
+    const intlLocale = getIntlLocale(language);
+
     const [hours, minutes] = newTime.split(":").map(Number);
     const startDate = new Date(0, 0, 0, hours, minutes);
     const endDate = new Date(startDate.getTime() + totalDuration * 60000);
-    const endTime = endDate.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+    const endTime = endDate.toLocaleTimeString(intlLocale, { hour: '2-digit', minute: '2-digit' });
 
     const targetId = editingAppointmentId || Math.random().toString(36).substring(7);
 
@@ -227,7 +230,7 @@ export default function SchedulePage() {
                   }`}
                 >
                   <span className={`text-[10px] font-semibold uppercase mb-0.5 ${isSelected ? "text-primary-foreground/90" : "text-muted-foreground"}`}>
-                    {format(day, "EEEEEE", { locale: ru })}
+                    {format(day, "EEEEEE", { locale: getDateFnsLocale(language) })}
                   </span>
                   <span className={`text-sm font-bold ${isSelected ? "text-primary-foreground" : "text-foreground"}`}>
                     {format(day, "d")}
@@ -255,7 +258,7 @@ export default function SchedulePage() {
               onSelect={(date) => {
                 if (date) setSelectedDate(date);
               }}
-              locale={ru}
+              locale={getDateFnsLocale(language)}
               className="rounded-2xl border bg-card text-card-foreground shadow-sm w-full p-2 sm:p-3 [--cell-size:2.6rem] sm:[--cell-size:3.3rem] max-w-full"
               components={{
                 DayButton: ({ day, modifiers, ...props }) => {

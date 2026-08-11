@@ -27,7 +27,7 @@ import {
   ArrowDownRight 
 } from "lucide-react";
 import { format } from "date-fns";
-import { ru } from "date-fns/locale";
+import { getDateFnsLocale } from "@/lib/i18n/dateLocale";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -53,7 +53,7 @@ export default function AnalyticsPage() {
   const [selectedMonth, setSelectedMonth] = useState<string>("all");
   const [activeTab, setActiveTab] = useState<"income" | "expenses">("income");
   const { currency } = useCurrency();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
 
   // Form state for new expense
   const [isExpenseSheetOpen, setIsExpenseSheetOpen] = useState(false);
@@ -137,7 +137,7 @@ export default function AnalyticsPage() {
     try {
       const [year, month] = monthKey.split("-");
       const date = new Date(parseInt(year, 10), parseInt(month, 10) - 1, 1);
-      const formatted = format(date, "LLLL yyyy", { locale: ru });
+      const formatted = format(date, "LLLL yyyy", { locale: getDateFnsLocale(language) });
       return formatted.charAt(0).toUpperCase() + formatted.slice(1);
     } catch {
       return monthKey;

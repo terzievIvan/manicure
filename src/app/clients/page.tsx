@@ -10,8 +10,10 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Label } from "@/components/ui/label";
 import { useTranslation } from "@/components/I18nProvider";
 
+import { getIntlLocale } from "@/lib/i18n/dateLocale";
+
 export default function ClientsPage() {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [search, setSearch] = useState("");
   const [clients, setClients] = useState<ClientItem[]>([]);
   
@@ -89,7 +91,7 @@ export default function ClientsPage() {
                     <Phone className="h-4 w-4 mr-1" />
                     {client.phone}
                   </div>
-                  <span className="text-xs">{t("clients.last_visit")}: {client.lastVisit ? new Date(client.lastVisit).toLocaleDateString() : ""}</span>
+                  <span className="text-xs">{t("clients.last_visit")}: {client.lastVisit ? new Date(client.lastVisit).toLocaleDateString(getIntlLocale(language)) : ""}</span>
                 </div>
               </div>
             </Link>
