@@ -4,16 +4,18 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Calendar, Users, BarChart2, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/components/I18nProvider";
 
 const navItems = [
-  { name: "Расписание", href: "/", icon: Calendar },
-  { name: "Клиенты", href: "/clients", icon: Users },
-  { name: "Аналитика", href: "/analytics", icon: BarChart2 },
-  { name: "Услуги", href: "/services", icon: Sparkles },
+  { translationKey: "nav.schedule", href: "/", icon: Calendar },
+  { translationKey: "nav.clients", href: "/clients", icon: Users },
+  { translationKey: "nav.analytics", href: "/analytics", icon: BarChart2 },
+  { translationKey: "nav.services", href: "/services", icon: Sparkles },
 ];
 
 export function BottomNav() {
   const pathname = usePathname();
+  const { t } = useTranslation();
 
   return (
     <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-md border-t border-border pb-safe">
@@ -30,7 +32,7 @@ export function BottomNav() {
               )}
             >
               <item.icon className="w-6 h-6" strokeWidth={isActive ? 2.5 : 2} />
-              <span className="text-[10px] font-medium">{item.name}</span>
+              <span className="text-[10px] font-medium">{t(item.translationKey)}</span>
             </Link>
           );
         })}

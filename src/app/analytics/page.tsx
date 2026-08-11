@@ -34,8 +34,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useCurrency } from "@/components/CurrencyProvider";
+import { useTranslation } from "@/components/I18nProvider";
 
 const EXPENSE_CATEGORIES = ["Материалы", "Аренда", "Оборудование", "Реклама", "Прочее"];
+const catMap: Record<string, string> = {
+  "Материалы": "cat.materials",
+  "Аренда": "cat.rent",
+  "Оборудование": "cat.equipment",
+  "Реклама": "cat.ads",
+  "Прочее": "cat.other",
+};
 
 export default function AnalyticsPage() {
   const [mounted, setMounted] = useState(false);
@@ -45,6 +53,7 @@ export default function AnalyticsPage() {
   const [selectedMonth, setSelectedMonth] = useState<string>("all");
   const [activeTab, setActiveTab] = useState<"income" | "expenses">("income");
   const { currency } = useCurrency();
+  const { t } = useTranslation();
 
   // Form state for new expense
   const [isExpenseSheetOpen, setIsExpenseSheetOpen] = useState(false);
@@ -124,7 +133,7 @@ export default function AnalyticsPage() {
   const avgCheck = completedCount > 0 ? Math.round(totalRevenue / completedCount) : 0;
 
   const formatMonthLabel = (monthKey: string) => {
-    if (monthKey === "all") return "За все время";
+    if (monthKey === "all") return t("analytics.all_time");
     try {
       const [year, month] = monthKey.split("-");
       const date = new Date(parseInt(year, 10), parseInt(month, 10) - 1, 1);
@@ -163,12 +172,7 @@ export default function AnalyticsPage() {
   };
 
   const getSessionPlural = (count: number) => {
-    const mod10 = count % 10;
-    const mod100 = count % 100;
-    if (mod100 >= 11 && mod100 <= 19) return `${count} сеансов`;
-    if (mod10 === 1) return `${count} сеанс`;
-    if (mod10 >= 2 && mod10 <= 4) return `${count} сеанса`;
-    return `${count} сеансов`;
+    return count.toString(); // simplified for i18n since label "Visits" is already present
   };
 
   return (
@@ -176,8 +180,8 @@ export default function AnalyticsPage() {
       {/* Sticky Header with Month Filter */}
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur px-4 pt-4 pb-4 border-b flex justify-between items-center gap-2">
         <div>
-          <h1 className="text-2xl font-bold">Аналитика</h1>
-          <p className="text-xs text-muted-foreground mt-0.5">Доходы и расходы</p>
+          <h1 className="text-2xl font-bold">{t("analytics.title")}</h1>
+          <p className="text-xs text-muted-foreground mt-0.5">{t("analytics.subtitle")}</p>
         </div>
 
         {/* Month Selector */}
@@ -188,7 +192,7 @@ export default function AnalyticsPage() {
           </SelectTrigger>
           <SelectContent className="p-1 rounded-2xl bg-card border border-border/80 shadow-xl z-50">
             <SelectItem value="all" className="text-xs font-semibold py-2.5 px-3 rounded-xl cursor-pointer">
-              За все время
+              {t("analytics.all_time")}
             </SelectItem>
             {availableMonths.map((m) => (
               <SelectItem key={m} value={m} className="text-xs font-semibold py-2.5 px-3 rounded-xl cursor-pointer">
@@ -207,7 +211,7 @@ export default function AnalyticsPage() {
           </div>
           
           <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-            Чистая прибыль ({formatMonthLabel(selectedMonth).toLowerCase()})
+            {t("analytics.net_profit")} ({formatMonthLabel(selectedMonth).toLowerCase()})
           </p>
           <p className={`text-4xl font-black mt-1 ${netProfit >= 0 ? "text-emerald-400" : "text-rose-400"}`}>
             {netProfit >= 0 ? `+${netProfit}` : netProfit} {currency}
@@ -216,11 +220,11 @@ export default function AnalyticsPage() {
           <div className="grid grid-cols-2 gap-2 mt-4 pt-4 border-t border-white/10 text-xs">
             <div className="flex items-center gap-1.5 text-emerald-400 font-semibold">
               <ArrowUpRight className="w-4 h-4 shrink-0" />
-              <span>Доход: +{totalRevenue} {currency}</span>
+              <span>{t("analytics.income_tab")}: +{totalRevenue} {currency}</span>
             </div>
             <div className="flex items-center gap-1.5 text-rose-400 font-semibold">
               <ArrowDownRight className="w-4 h-4 shrink-0" />
-              <span>Расход: -{totalExpenses} {currency}</span>
+              <span>{t("analytics.expenses_tab")}: -{totalExpenses} {currency}</span>
             </div>
           </div>
         </div>
@@ -230,7 +234,7 @@ export default function AnalyticsPage() {
           <div className="bg-card text-card-foreground p-4 rounded-2xl border border-border/50 shadow-xs flex flex-col justify-between">
             <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
               <TrendingUp className="w-5 h-5" />
-              <span className="text-xs font-bold uppercase tracking-wider">Выручка</span>
+              <span className="text-xs font-bold uppercase tracking-wider">{t("analytics.revenue")}</span>
             </div>
             <p className="text-2xl font-black mt-3 text-emerald-600 dark:text-emerald-400">+{totalRevenue} {currency}</p>
           </div>
@@ -238,7 +242,7 @@ export default function AnalyticsPage() {
           <div className="bg-card text-card-foreground p-4 rounded-2xl border border-border/50 shadow-xs flex flex-col justify-between">
             <div className="flex items-center gap-2 text-rose-500">
               <TrendingDown className="w-5 h-5" />
-              <span className="text-xs font-bold uppercase tracking-wider">Расходы</span>
+              <span className="text-xs font-bold uppercase tracking-wider">{t("analytics.expenses")}</span>
             </div>
             <p className="text-2xl font-black mt-3 text-rose-500">-{totalExpenses} {currency}</p>
           </div>
@@ -246,7 +250,7 @@ export default function AnalyticsPage() {
           <div className="bg-card text-card-foreground p-4 rounded-2xl border border-border/50 shadow-xs flex flex-col justify-between">
             <div className="flex items-center gap-2 text-primary">
               <CheckCircle2 className="w-5 h-5" />
-              <span className="text-xs font-bold uppercase tracking-wider">Визиты</span>
+              <span className="text-xs font-bold uppercase tracking-wider">{t("analytics.visits")}</span>
             </div>
             <p className="text-2xl font-black mt-3">{getSessionPlural(completedCount)}</p>
           </div>
@@ -254,7 +258,7 @@ export default function AnalyticsPage() {
           <div className="bg-card text-card-foreground p-4 rounded-2xl border border-border/50 shadow-xs flex flex-col justify-between">
             <div className="flex items-center gap-2 text-amber-500">
               <Award className="w-5 h-5" />
-              <span className="text-xs font-bold uppercase tracking-wider">Средний чек</span>
+              <span className="text-xs font-bold uppercase tracking-wider">{t("analytics.avg_check")}</span>
             </div>
             <p className="text-2xl font-black mt-3">{avgCheck} {currency}</p>
           </div>
@@ -271,7 +275,7 @@ export default function AnalyticsPage() {
             }`}
           >
             <Calendar className="w-4 h-4 text-emerald-500" />
-            Доходы ({completedAppointments.length})
+            {t("analytics.income_tab")} ({completedAppointments.length})
           </button>
           <button
             onClick={() => setActiveTab("expenses")}
@@ -282,7 +286,7 @@ export default function AnalyticsPage() {
             }`}
           >
             <Receipt className="w-4 h-4 text-rose-500" />
-            Расходы ({filteredExpenses.length})
+            {t("analytics.expenses_tab")} ({filteredExpenses.length})
           </button>
         </div>
 
@@ -301,15 +305,15 @@ export default function AnalyticsPage() {
                     </div>
                     <div className="text-right">
                       <span className="text-base font-extrabold text-emerald-600 dark:text-emerald-400">+{price} {currency}</span>
-                      <span className="block text-[10px] font-bold text-emerald-600/80 uppercase">Оплачено</span>
+                      <span className="block text-[10px] font-bold text-emerald-600/80 uppercase">{t("analytics.paid")}</span>
                     </div>
                   </div>
                 );
               })
             ) : (
               <div className="text-center py-8 text-muted-foreground bg-muted/30 rounded-2xl p-4">
-                <p className="text-sm font-medium">Нет завершенных сеансов {selectedMonth !== "all" ? "за этот месяц" : ""}</p>
-                <p className="text-xs mt-1">Отмечайте сеансы завершенными в расписании</p>
+                <p className="text-sm font-medium">{t("analytics.no_income")}</p>
+                <p className="text-xs mt-1">{t("analytics.no_income_desc")}</p>
               </div>
             )}
           </div>
@@ -320,7 +324,7 @@ export default function AnalyticsPage() {
               className="w-full h-12 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-bold flex items-center justify-center gap-2 shadow-sm"
             >
               <Plus className="w-5 h-5" />
-              Добавить расход
+              {t("analytics.add_expense")}
             </Button>
 
             {filteredExpenses.length > 0 ? (
@@ -331,7 +335,7 @@ export default function AnalyticsPage() {
                       <p className="font-semibold text-base">{exp.title}</p>
                       {exp.category && (
                         <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
-                          {exp.category}
+                          {t(catMap[exp.category] || "") || exp.category}
                         </span>
                       )}
                     </div>
@@ -351,8 +355,8 @@ export default function AnalyticsPage() {
               ))
             ) : (
               <div className="text-center py-8 text-muted-foreground bg-muted/30 rounded-2xl p-4">
-                <p className="text-sm font-medium">Нет внесенных расходов {selectedMonth !== "all" ? "за этот месяц" : ""}</p>
-                <p className="text-xs mt-1">Нажмите "Добавить расход", чтобы учесть закупку материалов</p>
+                <p className="text-sm font-medium">{t("analytics.no_expenses")}</p>
+                <p className="text-xs mt-1">{t("analytics.no_expenses_desc")}</p>
               </div>
             )}
           </div>
@@ -363,15 +367,15 @@ export default function AnalyticsPage() {
       <Sheet open={isExpenseSheetOpen} onOpenChange={setIsExpenseSheetOpen}>
         <SheetContent side="bottom" className="h-[80vh] rounded-t-3xl flex flex-col pt-6">
           <SheetHeader className="mb-4 border-b pb-3">
-            <SheetTitle className="text-left text-2xl font-bold">Новый расход</SheetTitle>
+            <SheetTitle className="text-left text-2xl font-bold">{t("analytics.new_expense")}</SheetTitle>
           </SheetHeader>
 
           <div className="flex-1 overflow-y-auto space-y-5 px-1 pb-6">
             <div className="space-y-2">
-              <Label htmlFor="exp-title" className="text-base font-semibold">Название расхода</Label>
+              <Label htmlFor="exp-title" className="text-base font-semibold">{t("analytics.expense_title")}</Label>
               <Input
                 id="exp-title"
-                placeholder="Например: Гель-лаки, Аренда..."
+                placeholder={t("analytics.expense_title_placeholder")}
                 className="h-14 rounded-2xl text-base bg-card px-4"
                 value={expenseTitle}
                 onChange={(e) => setExpenseTitle(e.target.value)}
@@ -391,7 +395,7 @@ export default function AnalyticsPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="exp-date" className="text-base font-semibold">Дата</Label>
+              <Label htmlFor="exp-date" className="text-base font-semibold">{t("schedule.date")}</Label>
               <Input
                 id="exp-date"
                 type="date"
@@ -402,15 +406,15 @@ export default function AnalyticsPage() {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-base font-semibold">Категория</Label>
+              <Label className="text-base font-semibold">{t("analytics.category")}</Label>
               <Select value={expenseCategory} onValueChange={(val) => setExpenseCategory(val || "Материалы")}>
                 <SelectTrigger className="w-full h-14 rounded-2xl text-base bg-card px-4">
-                  <SelectValue>{expenseCategory}</SelectValue>
+                  <SelectValue>{t(catMap[expenseCategory] || "") || expenseCategory}</SelectValue>
                 </SelectTrigger>
                 <SelectContent className="p-1 rounded-2xl bg-card border shadow-xl z-50">
                   {EXPENSE_CATEGORIES.map((cat) => (
                     <SelectItem key={cat} value={cat} className="text-base py-3 px-3 rounded-xl cursor-pointer">
-                      {cat}
+                      {t(catMap[cat] || "") || cat}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -422,7 +426,7 @@ export default function AnalyticsPage() {
               disabled={!expenseTitle.trim() || !expenseAmount}
               className="w-full h-14 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-base mt-4 shadow-md"
             >
-              Сохранить расход
+              {t("analytics.save_expense")}
             </Button>
           </div>
         </SheetContent>

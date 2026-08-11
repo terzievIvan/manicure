@@ -24,6 +24,7 @@ import { Calendar, CalendarDayButton } from "@/components/ui/calendar";
 import { ServiceIcon } from "@/components/ServiceIcon";
 import { useAppBadge } from "@/hooks/useAppBadge";
 import { useCurrency } from "@/components/CurrencyProvider";
+import { useTranslation } from "@/components/I18nProvider";
 
 export default function SchedulePage() {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -33,6 +34,7 @@ export default function SchedulePage() {
   const [clientsList, setClientsList] = useState<ClientItem[]>([]);
   const [servicesList, setServicesList] = useState<ServiceItem[]>([]);
   const { currency } = useCurrency();
+  const { t, language } = useTranslation();
 
   // Badging API hook
   useAppBadge(appointments);
@@ -195,7 +197,7 @@ export default function SchedulePage() {
     <div className="flex flex-col h-full bg-background pt-safe">
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur px-4 pt-4 pb-2 border-b">
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-bold">Расписание</h1>
+          <h1 className="text-2xl font-bold">{t("schedule.title")}</h1>
           <Button 
             variant="ghost" 
             size="icon" 
@@ -321,17 +323,17 @@ export default function SchedulePage() {
                   {isCompleted ? (
                     <span className="inline-flex items-center text-xs font-extrabold text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/60 px-2.5 py-1 rounded-full">
                       <CheckCircle2 className="w-3.5 h-3.5 mr-1 text-emerald-600 dark:text-emerald-400" />
-                      Завершен
+                      {t("status.completed")}
                     </span>
                   ) : isInProgress ? (
                     <span className="inline-flex items-center text-xs font-extrabold text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-950/60 px-2.5 py-1 rounded-full animate-pulse">
                       <PlayCircle className="w-3.5 h-3.5 mr-1 text-blue-600 dark:text-blue-400" />
-                      В работе
+                      {t("status.in_progress")}
                     </span>
                   ) : (
                     <span className="inline-flex items-center text-xs font-extrabold text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-950/60 px-2.5 py-1 rounded-full">
                       <Clock className="w-3.5 h-3.5 mr-1 text-amber-600 dark:text-amber-400" />
-                      В ожидании
+                      {t("status.waiting")}
                     </span>
                   )}
                 </div>
@@ -342,8 +344,8 @@ export default function SchedulePage() {
           })
         ) : (
           <div className="flex flex-col items-center justify-center py-12 text-muted-foreground text-center">
-            <p className="text-lg font-medium">Нет записей</p>
-            <p className="text-sm">На этот день пока ничего не запланировано.</p>
+            <p className="text-lg font-medium">{t("schedule.no_appointments")}</p>
+            <p className="text-sm">{t("schedule.no_appointments_desc")}</p>
           </div>
         )}
       </div>
@@ -358,7 +360,7 @@ export default function SchedulePage() {
         <SheetContent side="bottom" className="h-[90vh] rounded-t-3xl flex flex-col pt-6">
           <SheetHeader className="mb-4 flex flex-row items-center justify-between border-b pb-3">
             <SheetTitle className="text-left text-2xl font-bold">
-              {editingAppointmentId ? "Редактировать запись" : "Новая запись"}
+              {editingAppointmentId ? t("schedule.edit_appointment") : t("schedule.new_appointment")}
             </SheetTitle>
           </SheetHeader>
 
@@ -373,7 +375,7 @@ export default function SchedulePage() {
                 className="w-full h-12 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl text-base font-bold shadow-sm flex items-center justify-center gap-2"
               >
                 <CheckCircle2 className="w-5 h-5" />
-                Отметить сеанс как завершенный
+                {t("schedule.complete_session")}
               </Button>
             )}
 
@@ -381,12 +383,12 @@ export default function SchedulePage() {
             <div className="space-y-2">
               <Label htmlFor="client" className="flex items-center text-base font-semibold">
                 <User className="h-5 w-5 text-primary mr-2" />
-                Клиент
+                {t("schedule.client")}
               </Label>
               <Select value={newClientId} onValueChange={(val) => setNewClientId(val || "")}>
                 <SelectTrigger id="client" className="w-full h-15 rounded-2xl text-base font-semibold bg-card hover:bg-muted/30 border border-border/80 px-4 shadow-xs transition-all text-foreground">
                   <SelectValue>
-                    {clientsList.find(c => c.id === newClientId)?.name || "Выберите клиента..."}
+                    {clientsList.find(c => c.id === newClientId)?.name || t("schedule.choose_client")}
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent className="p-2 max-h-[350px] rounded-2xl w-[var(--radix-select-trigger-width)] min-w-[320px] shadow-2xl bg-card border border-border/80 backdrop-blur-xl">
@@ -419,7 +421,7 @@ export default function SchedulePage() {
               <div className="flex-1 space-y-2 min-w-0">
                 <Label htmlFor="date" className="flex items-center text-base font-semibold">
                   <CalendarIcon className="h-5 w-5 text-primary mr-2 shrink-0" />
-                  <span className="truncate">Дата</span>
+                  <span className="truncate">{t("schedule.date")}</span>
                 </Label>
                 <Input 
                   type="date" 
@@ -432,7 +434,7 @@ export default function SchedulePage() {
               <div className="flex-1 space-y-2 min-w-0">
                 <Label htmlFor="time" className="flex items-center text-base font-semibold">
                   <Clock className="h-5 w-5 text-primary mr-2 shrink-0" />
-                  <span className="truncate">Время</span>
+                  <span className="truncate">{t("schedule.time")}</span>
                 </Label>
                 <Input 
                   type="time" 
@@ -449,7 +451,7 @@ export default function SchedulePage() {
               <div className="flex justify-between items-center">
                 <Label className="flex items-center text-base font-semibold">
                   <Sparkles className="h-5 w-5 text-primary mr-2" />
-                  Услуги {newServiceIds.length > 0 && `(${newServiceIds.length})`}
+                  {t("schedule.services")} {newServiceIds.length > 0 && `(${newServiceIds.length})`}
                 </Label>
               </div>
 
@@ -471,7 +473,7 @@ export default function SchedulePage() {
                         ))}
                       </div>
                     ) : (
-                      <span className="text-muted-foreground text-base">Выберите услуги из списка...</span>
+                      <span className="text-muted-foreground text-base">{t("schedule.choose_services")}</span>
                     )}
                   </div>
                 </div>
@@ -523,11 +525,11 @@ export default function SchedulePage() {
             <div className="space-y-2">
               <Label htmlFor="notes" className="flex items-center text-base font-semibold">
                 <FileText className="h-5 w-5 text-primary mr-2" />
-                Заметки
+                {t("schedule.notes")}
               </Label>
               <Input 
                 id="notes" 
-                placeholder="Особые пожелания..." 
+                placeholder={t("schedule.notes_placeholder")} 
                 className="h-14 rounded-2xl text-base font-medium bg-muted/30 border-muted px-4" 
                 value={newNotes}
                 onChange={(e) => setNewNotes(e.target.value)}
@@ -542,14 +544,14 @@ export default function SchedulePage() {
                   className="h-14 rounded-2xl border-destructive text-destructive hover:bg-destructive/10 px-4 text-base font-semibold"
                   onClick={handleDeleteAppointment}
                 >
-                  Удалить
+                  {t("schedule.delete")}
                 </Button>
               )}
               <Button 
                 className="flex-1 h-14 rounded-2xl text-base font-bold shadow-md"
                 onClick={handleSaveAppointment}
               >
-                {editingAppointmentId ? "Сохранить изменения" : "Создать запись"}
+                {editingAppointmentId ? t("schedule.save") : t("schedule.create")}
               </Button>
             </div>
           </div>

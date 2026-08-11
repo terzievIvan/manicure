@@ -4,16 +4,18 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Calendar, Users, BarChart2, Sparkles, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/components/I18nProvider";
 
 const navItems = [
-  { name: "Расписание", href: "/", icon: Calendar },
-  { name: "Клиенты", href: "/clients", icon: Users },
-  { name: "Аналитика", href: "/analytics", icon: BarChart2 },
-  { name: "Услуги", href: "/services", icon: Sparkles },
+  { translationKey: "nav.schedule", href: "/", icon: Calendar },
+  { translationKey: "nav.clients", href: "/clients", icon: Users },
+  { translationKey: "nav.analytics", href: "/analytics", icon: BarChart2 },
+  { translationKey: "nav.services", href: "/services", icon: Sparkles },
 ];
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { t } = useTranslation();
 
   return (
     <div className="hidden md:flex flex-col w-64 border-r border-border bg-background h-screen sticky top-0 py-8 px-4 z-40">
@@ -39,7 +41,7 @@ export function Sidebar() {
               )}
             >
               <item.icon className="w-6 h-6" strokeWidth={isActive ? 2.5 : 2} />
-              <span className="text-base">{item.name}</span>
+              <span className="text-base">{t(item.translationKey)}</span>
             </Link>
           );
         })}
@@ -56,7 +58,7 @@ export function Sidebar() {
           )}
         >
           <Settings className="w-6 h-6" strokeWidth={pathname === "/settings" ? 2.5 : 2} />
-          <span className="text-base">Настройки</span>
+          <span className="text-base">{t("nav.settings")}</span>
         </Link>
       </div>
     </div>

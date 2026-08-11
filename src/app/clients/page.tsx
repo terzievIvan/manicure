@@ -8,8 +8,10 @@ import { getClients, saveClient, deleteClient, ClientItem } from "@/lib/supabase
 import Link from "next/link";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Label } from "@/components/ui/label";
+import { useTranslation } from "@/components/I18nProvider";
 
 export default function ClientsPage() {
+  const { t } = useTranslation();
   const [search, setSearch] = useState("");
   const [clients, setClients] = useState<ClientItem[]>([]);
   
@@ -62,11 +64,11 @@ export default function ClientsPage() {
   return (
     <div className="flex flex-col h-full bg-background pt-safe">
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur px-4 pt-4 pb-4 border-b">
-        <h1 className="text-2xl font-bold mb-4">Клиенты</h1>
+        <h1 className="text-2xl font-bold mb-4">{t("clients.title")}</h1>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           <Input 
-            placeholder="Поиск по имени или телефону..." 
+            placeholder={t("clients.subtitle")} 
             className="pl-10 h-12 rounded-xl text-base bg-muted/50 border-none"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -87,14 +89,14 @@ export default function ClientsPage() {
                     <Phone className="h-4 w-4 mr-1" />
                     {client.phone}
                   </div>
-                  <span className="text-xs">Был(а): {client.lastVisit ? new Date(client.lastVisit).toLocaleDateString('ru-RU') : "Недавно"}</span>
+                  <span className="text-xs">{t("clients.last_visit")}: {client.lastVisit ? new Date(client.lastVisit).toLocaleDateString() : ""}</span>
                 </div>
               </div>
             </Link>
           ))
         ) : (
           <div className="text-center py-10 text-muted-foreground">
-            <p>Клиенты не найдены</p>
+            <p>{t("clients.no_clients")}</p>
           </div>
         )}
       </div>
@@ -105,14 +107,14 @@ export default function ClientsPage() {
         </SheetTrigger>
         <SheetContent side="bottom" className="h-[70vh] rounded-t-3xl flex flex-col pt-8">
           <SheetHeader className="mb-4">
-            <SheetTitle className="text-left text-2xl">Новый клиент</SheetTitle>
+            <SheetTitle className="text-left text-2xl">{t("clients.new_client")}</SheetTitle>
           </SheetHeader>
           <div className="flex-1 overflow-y-auto space-y-6 px-1">
             <div className="space-y-2">
-              <Label htmlFor="name">Имя</Label>
+              <Label htmlFor="name">{t("clients.name")}</Label>
               <Input 
                 id="name" 
-                placeholder="Иван Иванов" 
+                placeholder={t("clients.name_placeholder")} 
                 className="h-12 rounded-xl text-base" 
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -120,11 +122,11 @@ export default function ClientsPage() {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="phone">Телефон</Label>
+              <Label htmlFor="phone">{t("clients.phone")}</Label>
               <Input 
                 type="tel" 
                 id="phone" 
-                placeholder="+41 79 000 00 00" 
+                placeholder={t("clients.phone_placeholder")} 
                 className="h-12 rounded-xl text-base block" 
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
@@ -132,10 +134,10 @@ export default function ClientsPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="notes">Заметки</Label>
+              <Label htmlFor="notes">{t("schedule.notes")}</Label>
               <Input 
                 id="notes" 
-                placeholder="Аллергии, предпочтения..." 
+                placeholder={t("schedule.notes_placeholder")} 
                 className="h-12 rounded-xl text-base" 
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
@@ -146,7 +148,7 @@ export default function ClientsPage() {
               className="w-full h-14 rounded-xl text-lg font-semibold mt-4"
               onClick={handleAddClient}
             >
-              Добавить
+              {t("clients.add")}
             </Button>
           </div>
         </SheetContent>

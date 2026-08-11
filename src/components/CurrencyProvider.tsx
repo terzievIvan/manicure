@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 
-type Currency = "CHF" | "EUR" | "USD" | "KZT" | "BYN" | "UAH" | "GEL" | "AMD" | "TRY";
+type Currency = "EUR" | "USD" | "UAH";
 
 interface CurrencyContextType {
   currency: Currency;
@@ -10,12 +10,12 @@ interface CurrencyContextType {
 }
 
 const CurrencyContext = createContext<CurrencyContextType>({
-  currency: "CHF",
+  currency: "EUR",
   setCurrency: () => {},
 });
 
 export function CurrencyProvider({ children }: { children: React.ReactNode }) {
-  const [currency, setCurrencyState] = useState<Currency>("CHF");
+  const [currency, setCurrencyState] = useState<Currency>("EUR");
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
   };
 
   if (!mounted) {
-    return <CurrencyContext.Provider value={{ currency: "CHF", setCurrency }}>{children}</CurrencyContext.Provider>;
+    return <CurrencyContext.Provider value={{ currency: "EUR", setCurrency }}>{children}</CurrencyContext.Provider>;
   }
 
   return (

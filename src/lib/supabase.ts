@@ -104,7 +104,13 @@ function setLocal<T>(key: string, value: T): void {
 export async function getClients(): Promise<ClientItem[]> {
   if (supabase) {
     try {
-      const { data, error } = await supabase.from('clients').select('*');
+      const { data: { user } } = await supabase.auth.getUser();
+      const query = supabase.from('clients').select('*');
+      if (user) {
+        query.eq('user_id', user.id);
+      }
+      
+      const { data, error } = await query;
       if (!error && data) {
         return data.map((c: any) => ({
           id: String(c.id),
@@ -132,12 +138,20 @@ export async function saveClient(client: ClientItem): Promise<void> {
 
   if (supabase) {
     try {
-      await supabase.from('clients').upsert({
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      const payload: any = {
         id: client.id,
         name: client.name,
         phone: client.phone,
         last_visit: client.lastVisit,
-      });
+      };
+      
+      if (user) {
+        payload.user_id = user.id;
+      }
+      
+      await supabase.from('clients').upsert(payload);
     } catch (e) {
       console.error('Error saving client to Supabase:', e);
     }
@@ -162,7 +176,13 @@ export async function deleteClient(id: string): Promise<void> {
 export async function getServices(): Promise<ServiceItem[]> {
   if (supabase) {
     try {
-      const { data, error } = await supabase.from('services').select('*');
+      const { data: { user } } = await supabase.auth.getUser();
+      const query = supabase.from('services').select('*');
+      if (user) {
+        query.eq('user_id', user.id);
+      }
+      
+      const { data, error } = await query;
       if (!error && data) {
         return data.map((s: any) => ({
           id: String(s.id),
@@ -191,13 +211,21 @@ export async function saveService(service: ServiceItem): Promise<void> {
 
   if (supabase) {
     try {
-      await supabase.from('services').upsert({
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      const payload: any = {
         id: service.id,
         name: service.name,
         price: service.price,
         duration: service.duration || 60,
         icon: service.icon || 'Sparkles',
-      });
+      };
+      
+      if (user) {
+        payload.user_id = user.id;
+      }
+      
+      await supabase.from('services').upsert(payload);
     } catch (e) {
       console.error('Error saving service to Supabase:', e);
     }
@@ -222,7 +250,13 @@ export async function deleteService(id: string): Promise<void> {
 export async function getAppointments(): Promise<AppointmentItem[]> {
   if (supabase) {
     try {
-      const { data, error } = await supabase.from('appointments').select('*');
+      const { data: { user } } = await supabase.auth.getUser();
+      const query = supabase.from('appointments').select('*');
+      if (user) {
+        query.eq('user_id', user.id);
+      }
+      
+      const { data, error } = await query;
       if (!error && data) {
         return data.map((a: any) => ({
           id: String(a.id),
@@ -257,7 +291,9 @@ export async function saveAppointment(appointment: AppointmentItem): Promise<voi
 
   if (supabase) {
     try {
-      await supabase.from('appointments').upsert({
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      const payload: any = {
         id: appointment.id,
         client_id: appointment.clientId,
         client_name: appointment.clientName,
@@ -269,7 +305,13 @@ export async function saveAppointment(appointment: AppointmentItem): Promise<voi
         end_time: appointment.endTime,
         status: appointment.status,
         notes: appointment.notes || '',
-      });
+      };
+      
+      if (user) {
+        payload.user_id = user.id;
+      }
+      
+      await supabase.from('appointments').upsert(payload);
     } catch (e) {
       console.error('Error saving appointment to Supabase:', e);
     }
@@ -324,7 +366,13 @@ export const MOCK_EXPENSES: ExpenseItem[] = [
 export async function getExpenses(): Promise<ExpenseItem[]> {
   if (supabase) {
     try {
-      const { data, error } = await supabase.from('expenses').select('*');
+      const { data: { user } } = await supabase.auth.getUser();
+      const query = supabase.from('expenses').select('*');
+      if (user) {
+        query.eq('user_id', user.id);
+      }
+      
+      const { data, error } = await query;
       if (!error && data) {
         const mapped = data.map((e: any) => ({
           id: String(e.id),
@@ -355,13 +403,21 @@ export async function saveExpense(expense: ExpenseItem): Promise<void> {
 
   if (supabase) {
     try {
-      await supabase.from('expenses').upsert({
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      const payload: any = {
         id: expense.id,
         title: expense.title,
         amount: expense.amount,
         date: expense.date,
         category: expense.category || 'Материалы',
-      });
+      };
+      
+      if (user) {
+        payload.user_id = user.id;
+      }
+      
+      await supabase.from('expenses').upsert(payload);
     } catch (e) {
       console.error('Error saving expense to Supabase:', e);
     }

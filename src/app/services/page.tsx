@@ -10,9 +10,11 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { Label } from "@/components/ui/label";
 import { ServiceIcon, SERVICE_ICONS } from "@/components/ServiceIcon";
 import { useCurrency } from "@/components/CurrencyProvider";
+import { useTranslation } from "@/components/I18nProvider";
 
 export default function ServicesPage() {
   const { currency } = useCurrency();
+  const { t } = useTranslation();
   const [services, setServices] = useState<ServiceItem[]>([]);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [editingServiceId, setEditingServiceId] = useState<string | null>(null);
@@ -91,8 +93,8 @@ export default function ServicesPage() {
     <div className="flex flex-col h-full bg-background pt-safe pb-24">
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur px-4 pt-4 pb-4 border-b flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold">Услуги</h1>
-          <p className="text-xs text-muted-foreground mt-0.5">Управление прайс-листом</p>
+          <h1 className="text-2xl font-bold">{t("services.title")}</h1>
+          <p className="text-xs text-muted-foreground mt-0.5">{t("services.subtitle")}</p>
         </div>
         <div className="flex items-center gap-2">
           <Link href="/settings">
@@ -105,7 +107,7 @@ export default function ServicesPage() {
             className="rounded-xl px-4 font-semibold gap-1.5 shadow-sm h-10"
           >
             <Plus className="h-4 w-4" />
-            Добавить
+            {t("services.add")}
           </Button>
         </div>
       </div>
@@ -136,8 +138,8 @@ export default function ServicesPage() {
           ))
         ) : (
           <div className="text-center py-12 text-muted-foreground">
-            <p className="text-lg font-medium">Список услуг пуст</p>
-            <p className="text-sm">Нажмите "Добавить", чтобы создать первую услугу</p>
+            <p className="text-lg font-medium">{t("services.no_services")}</p>
+            <p className="text-sm">{t("services.no_services_desc")}</p>
           </div>
         )}
       </div>
@@ -147,7 +149,7 @@ export default function ServicesPage() {
         <SheetContent side="bottom" className="h-[75vh] rounded-t-3xl flex flex-col pt-6">
           <SheetHeader className="mb-4 flex flex-row items-center justify-between border-b pb-3">
             <SheetTitle className="text-left text-2xl font-bold">
-              {editingServiceId ? "Редактировать услугу" : "Новая услуга"}
+              {editingServiceId ? t("services.edit_service") : t("services.new_service")}
             </SheetTitle>
             {editingServiceId && (
               <Button 
@@ -166,11 +168,11 @@ export default function ServicesPage() {
             <div className="space-y-2">
               <Label htmlFor="service-name" className="flex items-center text-sm font-semibold">
                 <Sparkles className="h-4 w-4 text-primary mr-2" />
-                Название услуги
+                {t("services.name")}
               </Label>
               <Input 
                 id="service-name" 
-                placeholder="например, Маникюр + Гель-лак" 
+                placeholder={t("services.name_placeholder")} 
                 className="h-13 rounded-2xl text-base bg-muted/30 border-muted" 
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -181,7 +183,7 @@ export default function ServicesPage() {
             <div className="space-y-2">
               <Label className="flex items-center text-sm font-semibold">
                 <Sparkles className="h-4 w-4 text-primary mr-2" />
-                Иконка услуги
+                {t("services.icon")}
               </Label>
               <div className="grid grid-cols-4 sm:grid-cols-8 gap-2 p-2 bg-muted/20 border border-muted/70 rounded-2xl">
                 {SERVICE_ICONS.map((item) => {
@@ -211,7 +213,7 @@ export default function ServicesPage() {
               <div className="space-y-2">
                 <Label htmlFor="service-price" className="flex items-center text-sm font-semibold">
                   <Tag className="h-4 w-4 text-primary mr-2" />
-                  Стоимость ({currency})
+                  {t("services.price")} ({currency})
                 </Label>
                 <Input 
                   type="number" 
@@ -226,7 +228,7 @@ export default function ServicesPage() {
               <div className="space-y-2">
                 <Label htmlFor="service-duration" className="flex items-center text-sm font-semibold">
                   <Clock className="h-4 w-4 text-primary mr-2" />
-                  Длительность (мин)
+                  {t("services.duration")}
                 </Label>
                 <Input 
                   type="number" 
@@ -247,14 +249,14 @@ export default function ServicesPage() {
                   className="h-14 rounded-2xl border-destructive text-destructive hover:bg-destructive/10 px-4"
                   onClick={handleDeleteService}
                 >
-                  Удалить
+                  {t("schedule.delete")}
                 </Button>
               )}
               <Button 
                 className="flex-1 h-14 rounded-2xl text-lg font-bold shadow-md"
                 onClick={handleSaveService}
               >
-                {editingServiceId ? "Сохранить изменения" : "Добавить услугу"}
+                {t("services.save")}
               </Button>
             </div>
           </div>

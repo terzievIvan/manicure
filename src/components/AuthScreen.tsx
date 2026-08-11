@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Sparkles, Mail, Lock, AlertCircle } from "lucide-react";
+import { useTranslation } from "@/components/I18nProvider";
 
 export function AuthScreen() {
   const [isLogin, setIsLogin] = useState(true);
@@ -14,6 +15,7 @@ export function AuthScreen() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const { t } = useTranslation();
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,15 +41,15 @@ export function AuthScreen() {
         if (data?.user?.identities?.length === 0) {
           throw new Error("Пользователь с таким email уже существует.");
         }
-        setMessage("Регистрация успешна! Теперь вы можете войти.");
+        setMessage(t("auth.success"));
         setIsLogin(true); // Переключаем на вкладку входа после регистрации
       }
     } catch (err: any) {
       console.error(err);
       if (err.message.includes("Invalid login credentials")) {
-        setError("Неверный email или пароль");
+        setError(t("auth.err_credentials"));
       } else if (err.message.includes("Password should be at least 6 characters")) {
-        setError("Пароль должен содержать минимум 6 символов");
+        setError(t("auth.err_short_pass"));
       } else {
         setError(err.message || "Произошла ошибка");
       }
@@ -77,7 +79,7 @@ export function AuthScreen() {
                 isLogin ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              Вход
+              {t("auth.login")}
             </button>
             <button
               onClick={() => { setIsLogin(false); setError(null); setMessage(null); }}
@@ -85,7 +87,7 @@ export function AuthScreen() {
                 !isLogin ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              Регистрация
+              {t("auth.register")}
             </button>
           </div>
 
@@ -105,7 +107,7 @@ export function AuthScreen() {
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t("auth.email")}</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
                 <Input
@@ -121,13 +123,13 @@ export function AuthScreen() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Пароль</Label>
+              <Label htmlFor="password">{t("auth.password")}</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
                 <Input
                   id="password"
                   type="password"
-                  placeholder="Минимум 6 символов"
+                  placeholder={t("auth.password_min")}
                   className="pl-10 h-12 rounded-2xl"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -142,13 +144,13 @@ export function AuthScreen() {
               disabled={loading}
               className="w-full h-12 rounded-2xl font-bold text-base mt-2"
             >
-              {loading ? "Загрузка..." : isLogin ? "Войти в аккаунт" : "Создать аккаунт"}
+              {loading ? t("auth.loading") : isLogin ? t("auth.btn_login") : t("auth.btn_register")}
             </Button>
           </form>
         </div>
         
         <p className="text-center text-xs text-muted-foreground px-4">
-          При входе вы соглашаетесь с тем, что ваши данные будут синхронизированы в облаке.
+          {t("auth.disclaimer")}
         </p>
       </div>
     </div>

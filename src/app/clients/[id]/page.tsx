@@ -7,10 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { getClients, saveClient, deleteClient, ClientItem } from "@/lib/supabase";
+import { useTranslation } from "@/components/I18nProvider";
 
 export default function EditClientPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
   const { id } = use(params);
+  const { t } = useTranslation();
   
   const [client, setClient] = useState<ClientItem>({ id: "", name: "", phone: "", lastVisit: "" });
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
@@ -43,7 +45,7 @@ export default function EditClientPage({ params }: { params: Promise<{ id: strin
           <Button variant="ghost" size="icon" onClick={() => router.back()} className="mr-2">
             <ArrowLeft className="h-6 w-6" />
           </Button>
-          <h1 className="text-2xl font-bold">Редактировать</h1>
+          <h1 className="text-2xl font-bold">{t("clients.edit_client")}</h1>
         </div>
         <Button 
           variant="ghost" 
@@ -57,7 +59,7 @@ export default function EditClientPage({ params }: { params: Promise<{ id: strin
 
       <div className="p-4 space-y-6">
         <div className="space-y-2">
-          <Label htmlFor="name">Имя</Label>
+          <Label htmlFor="name">{t("clients.name")}</Label>
           <Input 
             id="name" 
             className="h-12 rounded-xl text-base" 
@@ -67,7 +69,7 @@ export default function EditClientPage({ params }: { params: Promise<{ id: strin
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="phone">Телефон</Label>
+          <Label htmlFor="phone">{t("clients.phone")}</Label>
           <Input 
             type="tel" 
             id="phone" 
@@ -78,7 +80,7 @@ export default function EditClientPage({ params }: { params: Promise<{ id: strin
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="notes">Заметки</Label>
+          <Label htmlFor="notes">{t("schedule.notes")}</Label>
           <Input 
             id="notes" 
             className="h-12 rounded-xl text-base" 
@@ -89,7 +91,7 @@ export default function EditClientPage({ params }: { params: Promise<{ id: strin
 
         <Button className="w-full h-14 rounded-xl text-lg font-semibold mt-4" onClick={handleSave}>
           <Save className="h-5 w-5 mr-2" />
-          Сохранить изменения
+          {t("clients.save")}
         </Button>
       </div>
 
@@ -101,9 +103,9 @@ export default function EditClientPage({ params }: { params: Promise<{ id: strin
               <Trash2 className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="text-xl font-bold text-foreground">Удалить клиента?</h3>
+              <h3 className="text-xl font-bold text-foreground">{t("clients.delete_title") || "Удалить клиента?"}</h3>
               <p className="text-sm text-muted-foreground mt-1">
-                Вы уверены, что хотите удалить клиента <span className="font-semibold text-foreground">"{client.name}"</span>? Это действие невозможно отменить.
+                {t("clients.delete_desc") || "Вы уверены, что хотите удалить клиента?"} <span className="font-semibold text-foreground">"{client.name}"</span>
               </p>
             </div>
             <div className="grid grid-cols-2 gap-3 pt-2">
@@ -112,14 +114,14 @@ export default function EditClientPage({ params }: { params: Promise<{ id: strin
                 className="h-12 rounded-xl font-semibold border-border/80" 
                 onClick={() => setIsConfirmDeleteOpen(false)}
               >
-                Отмена
+                {t("analytics.cancel") || "Отмена"}
               </Button>
               <Button 
                 variant="destructive" 
                 className="h-12 rounded-xl font-semibold bg-destructive text-destructive-foreground hover:bg-destructive/90" 
                 onClick={handleConfirmDelete}
               >
-                Удалить
+                {t("schedule.delete")}
               </Button>
             </div>
           </div>

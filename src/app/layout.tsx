@@ -9,6 +9,7 @@ import { Sidebar } from "@/components/Sidebar";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/components/AuthProvider";
 import { CurrencyProvider } from "@/components/CurrencyProvider";
+import { I18nProvider } from "@/components/I18nProvider";
 
 const inter = Inter({ subsets: ["latin", "cyrillic"] });
 
@@ -45,7 +46,8 @@ export default function RootLayout({
           themes={["light", "dark", "pink"]}
         >
           <CurrencyProvider>
-            <AuthProvider>
+            <I18nProvider>
+              <AuthProvider>
               <div className="flex md:max-w-5xl lg:max-w-6xl mx-auto min-h-screen bg-background relative md:shadow-2xl md:ring-1 md:ring-border/5 flex-col md:flex-row pb-[env(safe-area-inset-bottom)] md:pb-0">
                 <Sidebar />
                 <div className="flex-1 max-w-md mx-auto md:max-w-none w-full relative bg-background flex flex-col min-h-screen">
@@ -56,7 +58,8 @@ export default function RootLayout({
                 </div>
                 <InstallPrompt />
               </div>
-            </AuthProvider>
+              </AuthProvider>
+            </I18nProvider>
           </CurrencyProvider>
         </ThemeProvider>
       </body>
