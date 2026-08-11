@@ -301,7 +301,7 @@ export default function AnalyticsPage() {
                     <div>
                       <p className="font-semibold text-base">{app.clientName}</p>
                       <p className="text-xs text-muted-foreground mt-0.5">{app.serviceName}</p>
-                      <p className="text-[11px] text-muted-foreground mt-1">{app.date} в {app.startTime}</p>
+                      <p className="text-[11px] text-muted-foreground mt-1">{app.date} {t("common.at")} {app.startTime}</p>
                     </div>
                     <div className="text-right">
                       <span className="text-base font-extrabold text-emerald-600 dark:text-emerald-400">+{price} {currency}</span>
@@ -346,7 +346,7 @@ export default function AnalyticsPage() {
                     <button
                       onClick={() => handleDeleteExpense(exp.id)}
                       className="p-1.5 text-muted-foreground hover:text-rose-500 rounded-lg transition-colors"
-                      title="Удалить расход"
+                      title={t("analytics.delete_expense_title")}
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -383,7 +383,7 @@ export default function AnalyticsPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="exp-amount" className="text-base font-semibold">Сумма ({currency})</Label>
+              <Label htmlFor="exp-amount" className="text-base font-semibold">{t("analytics.amount")} ({currency})</Label>
               <Input
                 id="exp-amount"
                 type="number"

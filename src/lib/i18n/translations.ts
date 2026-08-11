@@ -124,9 +124,17 @@ export const translations: Record<SupportedLanguage, Record<string, string>> = {
     "settings.language_desc": "Мова інтерфейсу",
     "settings.currency": "Валюта",
     "settings.currency_desc": "Для розрахунків та аналітики",
-    "settings.account": "Акаунт",
-    "settings.not_authorized": "Не авторизовано",
-    "settings.logout": "Вийти з акаунта"
+    // Common & PWA
+    "common.at": "о",
+    "analytics.amount": "Сума",
+    "analytics.delete_expense_title": "Видалити витрату",
+    "pwa.install_title": "Встановити додаток",
+    "pwa.install_desc_1": "Встановити додаток для швидкого доступу. Натисніть кнопку «Поділитися»",
+    "pwa.install_desc_2": "на панелі нижче та оберіть",
+    "pwa.install_desc_3": "«На початковий екран»",
+    "currency.eur": "Євро",
+    "currency.usd": "Долар США",
+    "currency.uah": "Українська гривня"
   },
   en: {
     "nav.schedule": "Schedule",
@@ -236,7 +244,17 @@ export const translations: Record<SupportedLanguage, Record<string, string>> = {
     "settings.currency_desc": "For calculations & analytics",
     "settings.account": "Account",
     "settings.not_authorized": "Not authorized",
-    "settings.logout": "Log Out"
+    "settings.logout": "Log Out",
+    "common.at": "at",
+    "analytics.amount": "Amount",
+    "analytics.delete_expense_title": "Delete expense",
+    "pwa.install_title": "Install App",
+    "pwa.install_desc_1": "Install our app for quick access. Tap the share button",
+    "pwa.install_desc_2": "below and select",
+    "pwa.install_desc_3": "«Add to Home Screen»",
+    "currency.eur": "Euro",
+    "currency.usd": "US Dollar",
+    "currency.uah": "Ukrainian Hryvnia"
   },
   de: {
     "nav.schedule": "Zeitplan",
@@ -346,7 +364,17 @@ export const translations: Record<SupportedLanguage, Record<string, string>> = {
     "settings.currency_desc": "Für Berechnungen",
     "settings.account": "Konto",
     "settings.not_authorized": "Nicht autorisiert",
-    "settings.logout": "Abmelden"
+    "settings.logout": "Abmelden",
+    "common.at": "um",
+    "analytics.amount": "Betrag",
+    "analytics.delete_expense_title": "Ausgabe löschen",
+    "pwa.install_title": "App installieren",
+    "pwa.install_desc_1": "Installieren Sie unsere App für schnellen Zugriff. Tippen Sie auf Teilen",
+    "pwa.install_desc_2": "unten und wählen Sie",
+    "pwa.install_desc_3": "«Zum Home-Bildschirm»",
+    "currency.eur": "Euro",
+    "currency.usd": "US-Dollar",
+    "currency.uah": "Ukrainische Hrywnja"
   },
   fr: {
     "nav.schedule": "Calendrier",
@@ -456,7 +484,17 @@ export const translations: Record<SupportedLanguage, Record<string, string>> = {
     "settings.currency_desc": "Pour l'analytique",
     "settings.account": "Compte",
     "settings.not_authorized": "Non autorisé",
-    "settings.logout": "Déconnexion"
+    "settings.logout": "Déconnexion",
+    "common.at": "à",
+    "analytics.amount": "Montant",
+    "analytics.delete_expense_title": "Supprimer la dépense",
+    "pwa.install_title": "Installer l'application",
+    "pwa.install_desc_1": "Installez notre application pour un accès rapide. Appuyez sur Partager",
+    "pwa.install_desc_2": "ci-dessous et sélectionnez",
+    "pwa.install_desc_3": "«Sur l'écran d'accueil»",
+    "currency.eur": "Euro",
+    "currency.usd": "Dollar américain",
+    "currency.uah": "Hryvnia ukrainienne"
   },
   ru: {
     "nav.schedule": "Расписание",
@@ -566,6 +604,16 @@ export const translations: Record<SupportedLanguage, Record<string, string>> = {
     "settings.currency_desc": "Для расчетов и аналитики",
     "settings.account": "Аккаунт",
     "settings.not_authorized": "Не авторизован",
-    "settings.logout": "Выйти из аккаунта"
+    "settings.logout": "Выйти из аккаунта",
+    "common.at": "в",
+    "analytics.amount": "Сумма",
+    "analytics.delete_expense_title": "Удалить расход",
+    "pwa.install_title": "Установить приложение",
+    "pwa.install_desc_1": "Установите наше приложение для быстрого доступа. Нажмите кнопку «Поделиться»",
+    "pwa.install_desc_2": "на панели ниже и выберите",
+    "pwa.install_desc_3": "«На экран Домой»",
+    "currency.eur": "Евро",
+    "currency.usd": "Доллар США",
+    "currency.uah": "Украинская гривна"
   }
 };

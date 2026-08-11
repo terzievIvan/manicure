@@ -231,9 +231,9 @@ export default function SettingsPage() {
           onChange={(e) => setCurrency(e.target.value as any)}
           className="w-full h-12 px-4 rounded-2xl border-2 border-border bg-background text-base font-semibold focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all appearance-none"
         >
-          <option value="EUR">Евро (EUR)</option>
-          <option value="USD">Доллар США (USD)</option>
-          <option value="UAH">Украинская гривна (UAH)</option>
+          <option value="EUR">{t("currency.eur")} (EUR)</option>
+          <option value="USD">{t("currency.usd")} (USD)</option>
+          <option value="UAH">{t("currency.uah")} (UAH)</option>
         </select>
       </div>
 
