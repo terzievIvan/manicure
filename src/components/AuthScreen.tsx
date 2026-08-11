@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,13 +14,27 @@ export function AuthScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const { t, language, setLanguage } = useTranslation();
 
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const timer = setInterval(() => {
+      setCooldown((prev) => Math.max(0, prev - 1));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [cooldown]);
+
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!supabase) return;
+
+    if (!isLogin && cooldown > 0) {
+      setError(t("auth.err_rate_limit"));
+      return;
+    }
 
     setLoading(true);
     setError(null);
@@ -43,6 +57,7 @@ export function AuthScreen() {
           throw new Error("Пользователь с таким email уже существует.");
         }
         setMessage(t("auth.success"));
+        setCooldown(60); // 60s cooldown after registration attempt
         setIsLogin(true); // Переключаем на вкладку входа после регистрации
       }
     } catch (err: any) {
@@ -54,6 +69,7 @@ export function AuthScreen() {
         setError(t("auth.err_short_pass"));
       } else if (msg.toLowerCase().includes("rate limit")) {
         setError(t("auth.err_rate_limit"));
+        setCooldown(120); // 120s cooldown on Supabase rate limit error
       } else if (msg.includes("already exists") || msg.includes("уже существует")) {
         setError(t("auth.err_already_exists"));
       } else {
@@ -163,10 +179,16 @@ export function AuthScreen() {
 
             <Button
               type="submit"
-              disabled={loading}
+              disabled={loading || (!isLogin && cooldown > 0)}
               className="w-full h-12 rounded-2xl font-bold text-base mt-2"
             >
-              {loading ? t("auth.loading") : isLogin ? t("auth.btn_login") : t("auth.btn_register")}
+              {loading
+                ? t("auth.loading")
+                : !isLogin && cooldown > 0
+                  ? `${t("auth.btn_register")} (${cooldown}s)`
+                  : isLogin
+                    ? t("auth.btn_login")
+                    : t("auth.btn_register")}
             </Button>
           </form>
         </div>
