@@ -5,8 +5,9 @@ import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Sparkles, Mail, Lock, AlertCircle } from "lucide-react";
+import { Sparkles, Mail, Lock, AlertCircle, Globe } from "lucide-react";
 import { useTranslation } from "@/components/I18nProvider";
+import { SupportedLanguage } from "@/lib/i18n/translations";
 
 export function AuthScreen() {
   const [isLogin, setIsLogin] = useState(true);
@@ -15,7 +16,7 @@ export function AuthScreen() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
-  const { t } = useTranslation();
+  const { t, language, setLanguage } = useTranslation();
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,7 +60,23 @@ export function AuthScreen() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4 relative">
+      {/* Переключатель языка */}
+      <div className="absolute top-4 right-4 z-10 flex items-center gap-1.5 bg-card/80 backdrop-blur-md px-3 py-1.5 rounded-2xl border border-border/60 shadow-xs">
+        <Globe className="w-4 h-4 text-muted-foreground" />
+        <select
+          value={language}
+          onChange={(e) => setLanguage(e.target.value as SupportedLanguage)}
+          className="bg-transparent text-xs font-semibold text-foreground focus:outline-none cursor-pointer pr-1"
+        >
+          <option value="uk" className="bg-card text-foreground">Українська (UK)</option>
+          <option value="en" className="bg-card text-foreground">English (EN)</option>
+          <option value="de" className="bg-card text-foreground">Deutsch (DE)</option>
+          <option value="fr" className="bg-card text-foreground">Français (FR)</option>
+          <option value="ru" className="bg-card text-foreground">Русский (RU)</option>
+        </select>
+      </div>
+
       <div className="w-full max-w-sm space-y-8">
         <div className="flex flex-col items-center text-center">
           <div className="w-16 h-16 bg-primary/10 rounded-3xl flex items-center justify-center mb-6">
