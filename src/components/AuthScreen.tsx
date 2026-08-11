@@ -11,6 +11,7 @@ import { SupportedLanguage } from "@/lib/i18n/translations";
 
 export function AuthScreen() {
   const [isLogin, setIsLogin] = useState(true);
+  const [isResetMode, setIsResetMode] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -26,6 +27,34 @@ export function AuthScreen() {
     }, 1000);
     return () => clearInterval(timer);
   }, [cooldown]);
+
+  const handleResetPasswordRequest = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!supabase || !email.trim()) return;
+
+    setLoading(true);
+    setError(null);
+    setMessage(null);
+
+    try {
+      const redirectUrl = `${window.location.origin}/reset-password`;
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+        redirectTo: redirectUrl,
+      });
+      if (error) throw error;
+      setMessage(t("auth.reset_sent"));
+    } catch (err: any) {
+      console.error(err);
+      const msg = err.message || "";
+      if (msg.toLowerCase().includes("rate limit")) {
+        setError(t("auth.err_rate_limit"));
+      } else {
+        setError(msg || "Произошла ошибка");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -110,87 +139,157 @@ export function AuthScreen() {
         </div>
 
         <div className="bg-card text-card-foreground p-6 rounded-3xl shadow-sm ring-1 ring-border/50">
-          <div className="flex bg-muted p-1 rounded-2xl mb-6">
-            <button
-              onClick={() => { setIsLogin(true); setError(null); setMessage(null); }}
-              className={`flex-1 text-sm font-semibold py-2 rounded-xl transition-colors ${
-                isLogin ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {t("auth.login")}
-            </button>
-            <button
-              onClick={() => { setIsLogin(false); setError(null); setMessage(null); }}
-              className={`flex-1 text-sm font-semibold py-2 rounded-xl transition-colors ${
-                !isLogin ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {t("auth.register")}
-            </button>
-          </div>
-
-          <form onSubmit={handleAuth} className="space-y-4">
-            {error && (
-              <div className="p-3 bg-destructive/10 text-destructive text-sm rounded-xl flex items-start gap-2">
-                <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
-                <span>{error}</span>
+          {!isResetMode ? (
+            <>
+              <div className="flex bg-muted p-1 rounded-2xl mb-6">
+                <button
+                  onClick={() => { setIsLogin(true); setError(null); setMessage(null); }}
+                  className={`flex-1 text-sm font-semibold py-2 rounded-xl transition-colors ${
+                    isLogin ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {t("auth.login")}
+                </button>
+                <button
+                  onClick={() => { setIsLogin(false); setError(null); setMessage(null); }}
+                  className={`flex-1 text-sm font-semibold py-2 rounded-xl transition-colors ${
+                    !isLogin ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {t("auth.register")}
+                </button>
               </div>
-            )}
-            
-            {message && (
-              <div className="p-3 bg-emerald-500/10 text-emerald-600 text-sm rounded-xl flex items-start gap-2">
-                <Sparkles className="w-4 h-4 mt-0.5 shrink-0" />
-                <span>{message}</span>
-              </div>
-            )}
 
-            <div className="space-y-2">
-              <Label htmlFor="email">{t("auth.email")}</Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="master@example.com"
-                  className="pl-10 h-12 rounded-2xl"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-            </div>
+              <form onSubmit={handleAuth} className="space-y-4">
+                {error && (
+                  <div className="p-3 bg-destructive/10 text-destructive text-sm rounded-xl flex items-start gap-2">
+                    <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+                    <span>{error}</span>
+                  </div>
+                )}
+                
+                {message && (
+                  <div className="p-3 bg-emerald-500/10 text-emerald-600 text-sm rounded-xl flex items-start gap-2">
+                    <Sparkles className="w-4 h-4 mt-0.5 shrink-0" />
+                    <span>{message}</span>
+                  </div>
+                )}
 
-            <div className="space-y-2">
-              <Label htmlFor="password">{t("auth.password")}</Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder={t("auth.password_min")}
-                  className="pl-10 h-12 rounded-2xl"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  minLength={6}
-                />
-              </div>
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">{t("auth.email")}</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="master@example.com"
+                      className="pl-10 h-12 rounded-2xl"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
 
-            <Button
-              type="submit"
-              disabled={loading || (!isLogin && cooldown > 0)}
-              className="w-full h-12 rounded-2xl font-bold text-base mt-2"
-            >
-              {loading
-                ? t("auth.loading")
-                : !isLogin && cooldown > 0
-                  ? `${t("auth.btn_register")} (${cooldown}s)`
-                  : isLogin
-                    ? t("auth.btn_login")
-                    : t("auth.btn_register")}
-            </Button>
-          </form>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <Label htmlFor="password">{t("auth.password")}</Label>
+                    {isLogin && (
+                      <button
+                        type="button"
+                        onClick={() => { setIsResetMode(true); setError(null); setMessage(null); }}
+                        className="text-xs font-semibold text-primary hover:underline"
+                      >
+                        {t("auth.forgot_password")}
+                      </button>
+                    )}
+                  </div>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
+                    <Input
+                      id="password"
+                      type="password"
+                      placeholder={t("auth.password_min")}
+                      className="pl-10 h-12 rounded-2xl"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      minLength={6}
+                    />
+                  </div>
+                </div>
+
+                <Button
+                  type="submit"
+                  disabled={loading || (!isLogin && cooldown > 0)}
+                  className="w-full h-12 rounded-2xl font-bold text-base mt-2"
+                >
+                  {loading
+                    ? t("auth.loading")
+                    : !isLogin && cooldown > 0
+                      ? `${t("auth.btn_register")} (${cooldown}s)`
+                      : isLogin
+                        ? t("auth.btn_login")
+                        : t("auth.btn_register")}
+                </Button>
+              </form>
+            </>
+          ) : (
+            <form onSubmit={handleResetPasswordRequest} className="space-y-4">
+              <div className="text-center mb-2">
+                <h2 className="text-xl font-bold text-foreground">{t("auth.reset_password")}</h2>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {t("auth.enter_email_for_reset")}
+                </p>
+              </div>
+
+              {error && (
+                <div className="p-3 bg-destructive/10 text-destructive text-sm rounded-xl flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+                  <span>{error}</span>
+                </div>
+              )}
+
+              {message && (
+                <div className="p-3 bg-emerald-500/10 text-emerald-600 text-sm rounded-xl flex items-start gap-2">
+                  <Sparkles className="w-4 h-4 mt-0.5 shrink-0" />
+                  <span>{message}</span>
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <Label htmlFor="reset-email">{t("auth.email")}</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
+                  <Input
+                    id="reset-email"
+                    type="email"
+                    placeholder="master@example.com"
+                    className="pl-10 h-12 rounded-2xl"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
+
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-full h-12 rounded-2xl font-bold text-base mt-2"
+              >
+                {loading ? t("auth.loading") : t("auth.reset_password")}
+              </Button>
+
+              <button
+                type="button"
+                onClick={() => { setIsResetMode(false); setError(null); setMessage(null); }}
+                className="w-full text-center text-xs font-semibold text-muted-foreground hover:text-foreground pt-2"
+              >
+                {t("auth.back_to_login")}
+              </button>
+            </form>
+          )}
         </div>
         
         <p className="text-center text-xs text-muted-foreground px-4">
