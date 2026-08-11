@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Sparkles, Mail, Lock, AlertCircle, Globe } from "lucide-react";
 import { useTranslation } from "@/components/I18nProvider";
 import { SupportedLanguage } from "@/lib/i18n/translations";
+import { PasswordStrength } from "@/components/PasswordStrength";
 
 export function AuthScreen() {
   const [isLogin, setIsLogin] = useState(true);
@@ -217,6 +218,7 @@ export function AuthScreen() {
                       minLength={6}
                     />
                   </div>
+                  {!isLogin && <PasswordStrength password={password} />}
                 </div>
 
                 <Button

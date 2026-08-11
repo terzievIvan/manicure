@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Sparkles, Lock, AlertCircle } from "lucide-react";
 import { useTranslation } from "@/components/I18nProvider";
+import { PasswordStrength } from "@/components/PasswordStrength";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -86,6 +87,7 @@ export default function ResetPasswordPage() {
                   minLength={6}
                 />
               </div>
+              <PasswordStrength password={newPassword} />
             </div>
 
             <Button
