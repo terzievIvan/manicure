@@ -84,9 +84,11 @@ export default function ServicesPage() {
     if (!mins || mins <= 0) return "";
     const h = Math.floor(mins / 60);
     const m = mins % 60;
-    if (h > 0 && m > 0) return `${h}ч ${m}мин`;
-    if (h > 0) return `${h}ч`;
-    return `${m}мин`;
+    const hUnit = t("time.h");
+    const mUnit = t("time.m");
+    if (h > 0 && m > 0) return `${h} ${hUnit} ${m} ${mUnit}`;
+    if (h > 0) return `${h} ${hUnit}`;
+    return `${m} ${mUnit}`;
   };
 
   return (
