@@ -221,7 +221,6 @@ export default function ServicesPage() {
                 <Input 
                   type="number" 
                   id="service-price" 
-                  placeholder="85" 
                   className="h-13 rounded-2xl text-base bg-muted/30 border-muted" 
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
