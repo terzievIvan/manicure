@@ -67,7 +67,7 @@ export function AuthScreen() {
           </div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground">Manic</h1>
           <p className="text-muted-foreground mt-2">
-            CRM для бьюти-мастеров
+            {t("auth.subtitle")}
           </p>
         </div>
 

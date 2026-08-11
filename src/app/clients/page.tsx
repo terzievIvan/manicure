@@ -128,7 +128,6 @@ export default function ClientsPage() {
               <Input 
                 type="tel" 
                 id="phone" 
-                placeholder={t("clients.phone_placeholder")} 
                 className="h-12 rounded-xl text-base block" 
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
