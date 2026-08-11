@@ -47,12 +47,17 @@ export function AuthScreen() {
       }
     } catch (err: any) {
       console.error(err);
-      if (err.message.includes("Invalid login credentials")) {
+      const msg = err.message || "";
+      if (msg.includes("Invalid login credentials")) {
         setError(t("auth.err_credentials"));
-      } else if (err.message.includes("Password should be at least 6 characters")) {
+      } else if (msg.includes("Password should be at least 6 characters")) {
         setError(t("auth.err_short_pass"));
+      } else if (msg.toLowerCase().includes("rate limit")) {
+        setError(t("auth.err_rate_limit"));
+      } else if (msg.includes("already exists") || msg.includes("уже существует")) {
+        setError(t("auth.err_already_exists"));
       } else {
-        setError(err.message || "Произошла ошибка");
+        setError(msg || "Произошла ошибка");
       }
     } finally {
       setLoading(false);

@@ -130,7 +130,7 @@ export default function SettingsPage() {
               variant="outline"
               className="w-full h-11 rounded-2xl text-sm font-semibold border-primary/20 text-primary hover:bg-primary/5"
             >
-              🚀 {t("settings.test_notification")}
+               {t("settings.test_notification")}
             </Button>
           </div>
         ) : (
