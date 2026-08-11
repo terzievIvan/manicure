@@ -185,7 +185,7 @@ export default function ServicesPage() {
                 <Sparkles className="h-4 w-4 text-primary mr-2" />
                 {t("services.icon")}
               </Label>
-              <div className="grid grid-cols-4 sm:grid-cols-8 gap-2 p-2 bg-muted/20 border border-muted/70 rounded-2xl">
+              <div className="grid grid-cols-4 sm:grid-cols-8 gap-2 p-2 bg-muted/20 border border-muted/70 rounded-2xl max-h-52 overflow-y-auto">
                 {SERVICE_ICONS.map((item) => {
                   const isSelected = selectedIcon === item.name;
                   const Icon = item.Icon;
